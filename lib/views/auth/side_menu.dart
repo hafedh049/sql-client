@@ -32,7 +32,7 @@ class _SideMenuState extends State<SideMenu> {
   );
 
   final List<Map<String, dynamic>> _exportCSVs = List<Map<String, dynamic>>.generate(
-    10,
+    2,
     (int index) => <String, dynamic>{
       "name": "Export Table as CSV",
       "callback": () => showToast("Table exported as CSV", greenColor),
@@ -61,8 +61,7 @@ class _SideMenuState extends State<SideMenu> {
           Expanded(
             child: ListView.separated(
               itemBuilder: (BuildContext context, int index) => AnimatedButton(
-                width: 300,
-                height: 60,
+                height: 40,
                 text: _runSQLQueries[index]["name"],
                 selectedTextColor: darkColor,
                 animatedOn: AnimatedOn.onHover,
@@ -82,8 +81,7 @@ class _SideMenuState extends State<SideMenu> {
           const SizedBox(height: 20),
           for (Map<String, dynamic> export in _exportCSVs) ...<Widget>[
             AnimatedButton(
-              //width: 300,
-              height: 60,
+              height: 40,
               text: export["name"],
               selectedTextColor: darkColor,
               animatedOn: AnimatedOn.onHover,
@@ -96,139 +94,128 @@ class _SideMenuState extends State<SideMenu> {
               onPress: export["callback"],
             ),
             const SizedBox(height: 20),
-            AnimatedButton(
-              //width: 300,
-              height: 80,
-              text: "Run Sql Query with\ndatetime variables",
-              selectedTextColor: darkColor,
-              animatedOn: AnimatedOn.onHover,
-              animationDuration: 500.ms,
-              isReverse: true,
-              selectedBackgroundColor: redColor,
-              backgroundColor: purpleColor,
-              transitionType: TransitionType.TOP_TO_BOTTOM,
-              textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-              onPress: export["callback"],
-            ),
-            const SizedBox(height: 20),
-            StatefulBuilder(
-              key: null,
-              builder: (BuildContext context, void Function(void Function()) _) {
-                return Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
-                        child: TextField(
-                          controller: _from,
-                          readOnly: true,
-                          style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-                          decoration: InputDecoration(
-                            hintText: "From",
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.all(8),
-                            hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-                          ),
+          ],
+          AnimatedButton(
+            height: 40,
+            text: "Run Sql Query with datetime variables",
+            selectedTextColor: darkColor,
+            animatedOn: AnimatedOn.onHover,
+            animationDuration: 500.ms,
+            isReverse: true,
+            selectedBackgroundColor: redColor,
+            backgroundColor: purpleColor,
+            transitionType: TransitionType.TOP_TO_BOTTOM,
+            textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
+            onPress: () {},
+          ),
+          const SizedBox(height: 20),
+          StatefulBuilder(
+            key: null,
+            builder: (BuildContext context, void Function(void Function()) _) {
+              return Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
+                      child: TextField(
+                        controller: _from,
+                        readOnly: true,
+                        style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
+                        decoration: InputDecoration(
+                          hintText: "From",
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.all(8),
+                          hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
-                        child: TextField(
-                          controller: _to,
-                          readOnly: true,
-                          style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-                          decoration: InputDecoration(
-                            hintText: "To",
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.all(8),
-                            hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-                          ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
+                      child: TextField(
+                        controller: _to,
+                        readOnly: true,
+                        style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
+                        decoration: InputDecoration(
+                          hintText: "To",
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.all(8),
+                          hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
                         ),
                       ),
                     ),
-                  ],
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+          PageView(
+            children: <Widget>[],
+          ),
+          TableCalendar(
+            firstDay: DateTime(1970),
+            lastDay: DateTime(2300),
+            focusedDay: _fromFocusedDay,
+            calendarFormat: _fromCalendarFormat,
+            selectedDayPredicate: (DateTime day) => isSameDay(_fromSelectedDay, day),
+            onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+              if (!isSameDay(_fromSelectedDay, selectedDay)) {
+                setState(
+                  () {
+                    _fromSelectedDay = selectedDay;
+                    _fromFocusedDay = focusedDay;
+                  },
                 );
-              },
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
+              }
+            },
+            onFormatChanged: (CalendarFormat format) {
+              if (_fromCalendarFormat != format) {
+                setState(
+                  () {
+                    _fromCalendarFormat = format;
+                  },
+                );
+              }
+            },
+            onPageChanged: (DateTime focusedDay) {
+              _fromFocusedDay = focusedDay;
+            },
+          ),
+          /*SizedBox(
               height: 300,
-              child: StatefulBuilder(
-                builder: (BuildContext context, void Function(void Function()) _) {
-                  return Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: TableCalendar(
-                          firstDay: DateTime(1970),
-                          lastDay: DateTime(2300),
-                          focusedDay: _fromFocusedDay,
-                          calendarFormat: _fromCalendarFormat,
-                          selectedDayPredicate: (DateTime day) => isSameDay(_fromSelectedDay, day),
-                          onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-                            if (!isSameDay(_fromSelectedDay, selectedDay)) {
-                              _(
-                                () {
-                                  _fromSelectedDay = selectedDay;
-                                  _fromFocusedDay = focusedDay;
-                                },
-                              );
-                            }
-                          },
-                          onFormatChanged: (CalendarFormat format) {
-                            if (_fromCalendarFormat != format) {
-                              _(
-                                () {
-                                  _fromCalendarFormat = format;
-                                },
-                              );
-                            }
-                          },
-                          onPageChanged: (DateTime focusedDay) {
-                            _fromFocusedDay = focusedDay;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TableCalendar(
-                          firstDay: DateTime(1970),
-                          lastDay: DateTime(2300),
-                          focusedDay: _toFocusedDay,
-                          calendarFormat: _toCalendarFormat,
-                          selectedDayPredicate: (DateTime day) => isSameDay(_toSelectedDay, day),
-                          onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-                            if (!isSameDay(_toSelectedDay, selectedDay)) {
-                              _(
-                                () {
-                                  _toSelectedDay = selectedDay;
-                                  _toFocusedDay = focusedDay;
-                                },
-                              );
-                            }
-                          },
-                          onFormatChanged: (CalendarFormat format) {
-                            if (_toCalendarFormat != format) {
-                              _(
-                                () {
-                                  _toCalendarFormat = format;
-                                },
-                              );
-                            }
-                          },
-                          onPageChanged: (DateTime focusedDay) {
-                            _toFocusedDay = focusedDay;
-                          },
-                        ),
-                      ),
-                    ],
-                  );
+              child: TableCalendar(
+                firstDay: DateTime(1970),
+                lastDay: DateTime(2300),
+                focusedDay: _toFocusedDay,
+                calendarFormat: _toCalendarFormat,
+                selectedDayPredicate: (DateTime day) => isSameDay(_toSelectedDay, day),
+                onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+                  if (!isSameDay(_toSelectedDay, selectedDay)) {
+                    setState(
+                      () {
+                        _toSelectedDay = selectedDay;
+                        _toFocusedDay = focusedDay;
+                      },
+                    );
+                  }
+                },
+                onFormatChanged: (CalendarFormat format) {
+                  if (_toCalendarFormat != format) {
+                    setState(
+                      () {
+                        _toCalendarFormat = format;
+                      },
+                    );
+                  }
+                },
+                onPageChanged: (DateTime focusedDay) {
+                  _toFocusedDay = focusedDay;
                 },
               ),
-            ),
-          ],
+            ),*/
         ],
       ),
     );
