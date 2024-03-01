@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sql_client/utils/shared.dart';
+import 'package:sql_client/views/auth/side_menu.dart';
 import 'package:sql_client/views/sql_table.dart';
 
 class Home extends StatefulWidget {
@@ -20,6 +21,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             Expanded(child: SQLTable()),
             SizedBox(width: 20),
+            SideMenu(),
           ],
         ),
       ),

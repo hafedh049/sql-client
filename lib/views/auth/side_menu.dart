@@ -15,9 +15,14 @@ class SideMenu extends StatefulWidget {
 }
 
 class _SideMenuState extends State<SideMenu> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime _selectedDay = DateTime.now();
+  CalendarFormat _fromCalendarFormat = CalendarFormat.month;
+  DateTime _fromFocusedDay = DateTime.now();
+  DateTime _fromSelectedDay = DateTime.now();
+
+  CalendarFormat _toCalendarFormat = CalendarFormat.month;
+  DateTime _toFocusedDay = DateTime.now();
+  DateTime _toSelectedDay = DateTime.now();
+
   final List<Map<String, dynamic>> _runSQLQueries = List<Map<String, dynamic>>.generate(
     10,
     (int index) => <String, dynamic>{
@@ -149,39 +154,79 @@ class _SideMenuState extends State<SideMenu> {
               },
             ),
             const SizedBox(height: 20),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TableCalendar(
-                    firstDay: DateTime(1970),
-                    lastDay: DateTime(2300),
-                    focusedDay: _focusedDay,
-                    calendarFormat: _calendarFormat,
-                    selectedDayPredicate: (DateTime day) => isSameDay(_selectedDay, day),
-                    onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-                      if (!isSameDay(_selectedDay, selectedDay)) {
-                        // Call `setState()` when updating the selected day
-                        setState(() {
-                          _selectedDay = selectedDay;
-                          _focusedDay = focusedDay;
-                        });
-                      }
-                    },
-                    onFormatChanged: (format) {
-                      if (_calendarFormat != format) {
-                        // Call `setState()` when updating calendar format
-                        setState(() {
-                          _calendarFormat = format;
-                        });
-                      }
-                    },
-                    onPageChanged: (focusedDay) {
-                      // No need to call `setState()` here
-                      _focusedDay = focusedDay;
-                    },
-                  ),
-                ),
-              ],
+            SizedBox(
+              height: 300,
+              child: StatefulBuilder(
+                builder: (BuildContext context, void Function(void Function()) _) {
+                  return Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: TableCalendar(
+                          firstDay: DateTime(1970),
+                          lastDay: DateTime(2300),
+                          focusedDay: _fromFocusedDay,
+                          calendarFormat: _fromCalendarFormat,
+                          selectedDayPredicate: (DateTime day) => isSameDay(_fromSelectedDay, day),
+                          onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+                            if (!isSameDay(_fromSelectedDay, selectedDay)) {
+                              _(
+                                () {
+                                  _fromSelectedDay = selectedDay;
+                                  _fromFocusedDay = focusedDay;
+                                },
+                              );
+                            }
+                          },
+                          onFormatChanged: (CalendarFormat format) {
+                            if (_fromCalendarFormat != format) {
+                              _(
+                                () {
+                                  _fromCalendarFormat = format;
+                                },
+                              );
+                            }
+                          },
+                          onPageChanged: (DateTime focusedDay) {
+                            _fromFocusedDay = focusedDay;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TableCalendar(
+                          firstDay: DateTime(1970),
+                          lastDay: DateTime(2300),
+                          focusedDay: _toFocusedDay,
+                          calendarFormat: _toCalendarFormat,
+                          selectedDayPredicate: (DateTime day) => isSameDay(_toSelectedDay, day),
+                          onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+                            if (!isSameDay(_toSelectedDay, selectedDay)) {
+                              _(
+                                () {
+                                  _toSelectedDay = selectedDay;
+                                  _toFocusedDay = focusedDay;
+                                },
+                              );
+                            }
+                          },
+                          onFormatChanged: (CalendarFormat format) {
+                            if (_toCalendarFormat != format) {
+                              _(
+                                () {
+                                  _toCalendarFormat = format;
+                                },
+                              );
+                            }
+                          },
+                          onPageChanged: (DateTime focusedDay) {
+                            _toFocusedDay = focusedDay;
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ],
         ],
