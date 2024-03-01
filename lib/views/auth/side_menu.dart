@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sql_client/utils/shared.dart';
 
+import '../../utils/callbacks.dart';
+
 class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
 
@@ -9,6 +11,12 @@ class SideMenu extends StatefulWidget {
 }
 
 class _SideMenuState extends State<SideMenu> {
+  final List<Map<String, dynamic>> _runSQLQueries = <Map<String, dynamic>>[
+    <String, dynamic>{
+      "name": "Run SQL Query",
+      "callback": () => showToast("Run SQL Query clicked", greenColor),
+    },
+  ];
   @override
   Widget build(BuildContext context) {
     return Container(
