@@ -20,6 +20,9 @@ dependencies:
   animated_loading_border: ^0.0.2
   google_fonts: ^6.1.0
   flutter_animated_button: ^2.0.3
+  crypto: ^3.0.3
+  data_table_2: ^2.5.11
+  date_format: ^2.0.7
 
 dev_dependencies:
   flutter_test:

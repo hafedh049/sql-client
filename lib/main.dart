@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sql_client/views/auth/sign_in.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,6 +11,9 @@ class Main extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp();
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SignIn(),
+    );
   }
 }
