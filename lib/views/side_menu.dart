@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:sql_client/utils/shared.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../../utils/callbacks.dart';
+import '../utils/callbacks.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
@@ -24,6 +25,8 @@ class _SideMenuState extends State<SideMenu> {
   DateTime _toFocusedDay = DateTime.now();
   DateTime _toSelectedDay = DateTime.now();
 
+  final TextEditingController _hoursController = TextEditingController();
+
   final List<Map<String, dynamic>> _runSQLQueries = List<Map<String, dynamic>>.generate(
     10,
     (int index) => <String, dynamic>{
@@ -40,14 +43,12 @@ class _SideMenuState extends State<SideMenu> {
     },
   );
 
-  String _from = "From";
-  String _to = "To";
-
   final PageController _dateController = PageController();
 
   @override
   void dispose() {
     _dateController.dispose();
+    _hoursController.dispose();
     super.dispose();
   }
 
@@ -108,41 +109,59 @@ class _SideMenuState extends State<SideMenu> {
               onPress: () {},
             ),
             const SizedBox(height: 20),
-            StatefulBuilder(
-              key: null,
-              builder: (BuildContext context, void Function(void Function()) _) {
-                return Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _dateController.animateToPage(0, duration: 300.ms, curve: Curves.ease),
-                        hoverColor: transparentColor,
-                        splashColor: transparentColor,
-                        highlightColor: transparentColor,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
-                          child: Text(_from, style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor)),
-                        ),
-                      ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: InkWell(
+                    onTap: () => _dateController.animateToPage(0, duration: 300.ms, curve: Curves.ease),
+                    hoverColor: transparentColor,
+                    splashColor: transparentColor,
+                    highlightColor: transparentColor,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
+                      child: Text("FROM", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor)),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _dateController.animateToPage(1, duration: 300.ms, curve: Curves.ease),
-                        hoverColor: transparentColor,
-                        splashColor: transparentColor,
-                        highlightColor: transparentColor,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
-                          child: Text(_to, style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor)),
-                        ),
-                      ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: InkWell(
+                    onTap: () => _dateController.animateToPage(1, duration: 300.ms, curve: Curves.ease),
+                    hoverColor: transparentColor,
+                    splashColor: transparentColor,
+                    highlightColor: transparentColor,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
+                      child: Text("TO", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor)),
                     ),
-                  ],
-                );
-              },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(color: scaffoldColor, borderRadius: BorderRadius.circular(3)),
+              child: StatefulBuilder(
+                builder: (BuildContext context, void Function(void Function()) _) {
+                  return TextField(
+                    onChanged: (String value) => value.trim().length <= 1 ? _(() {}) : null,
+                    controller: _hoursController,
+                    style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(20),
+                      focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: purpleColor, width: 2, style: BorderStyle.solid)),
+                      border: InputBorder.none,
+                      hintText: 'Hours',
+                      hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                      prefixIcon: _hoursController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
+                    ),
+                    inputFormatters: <TextInputFormatter>[LengthLimitingTextInputFormatter(2), FilteringTextInputFormatter.digitsOnly],
+                    cursorColor: purpleColor,
+                  );
+                },
+              ),
             ),
             const SizedBox(height: 20),
             SizedBox(

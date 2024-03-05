@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:sql_client/views/settings.dart';
 import '../models/products_model.dart';
 import '../utils/helpers/data_sources.dart';
 import '../utils/shared.dart';
@@ -65,6 +67,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
           children: <Widget>[
             Text("Products", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: greyColor)),
             const Spacer(),
+            IconButton(onPressed: () => showModalBottomSheet(context: context, builder: (BuildContext context) => const Settings()), icon: const Icon(FontAwesome.gears_solid, color: whiteColor, size: 25)),
           ],
         ),
         Container(width: MediaQuery.sizeOf(context).width, height: .3, color: greyColor, margin: const EdgeInsets.symmetric(vertical: 20)),
