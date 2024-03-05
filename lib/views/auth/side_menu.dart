@@ -115,7 +115,7 @@ class _SideMenuState extends State<SideMenu> {
                   children: <Widget>[
                     Expanded(
                       child: InkWell(
-                        onTap: () => _dateController.jumpToPage(0),
+                        onTap: () => _dateController.animateToPage(0, duration: 300.ms, curve: Curves.ease),
                         hoverColor: transparentColor,
                         splashColor: transparentColor,
                         highlightColor: transparentColor,
@@ -129,7 +129,7 @@ class _SideMenuState extends State<SideMenu> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: InkWell(
-                        onTap: () => _dateController.jumpToPage(1),
+                        onTap: () => _dateController.animateToPage(1, duration: 300.ms, curve: Curves.ease),
                         hoverColor: transparentColor,
                         splashColor: transparentColor,
                         highlightColor: transparentColor,
