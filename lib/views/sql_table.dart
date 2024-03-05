@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../models/products_model.dart';
 import '../utils/helpers/data_sources.dart';
 import '../utils/shared.dart';
 
@@ -14,47 +15,28 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
   final RestorableProductSelections _productSelections = RestorableProductSelections();
   final RestorableInt _rowIndex = RestorableInt(0);
   final RestorableInt _rowsPerPage = RestorableInt(PaginatedDataTable.defaultRowsPerPage + 10);
-  final RestorableBool _sortAscending = RestorableBool(true);
-  final RestorableIntN _sortColumnIndex = RestorableIntN(null);
   late ProductDataSource _productsDataSource;
   bool _initialized = false;
-  final List<String> _columns = const <String>["Name", "Category", "Quantity", "Date", "Reference", "New Price"];
+  final List<String> _columns = <String>[for (int index = 0; index < 10; index += 1) "C$index"];
   final GlobalKey<State> _pagerKey = GlobalKey<State>();
   final TextEditingController _searchController = TextEditingController();
-  final List<Product> _products = <Product>[for (int index = 0; index < 100; index++) Product("P${index + 1}", "C${index + 1}", DateTime.now(), "Ref${index + 1}", 100, 150)];
+  final List<Product> _products = <Product>[
+    for (int index = 0; index < 100; index++) Product([for (int jndex = 0; jndex < 10; jndex += 1) "P$index$jndex"])
+  ];
 
   @override
   String get restorationId => 'paginated_product_table';
-  late final Map<int, void Function()> _map;
-
-  @override
-  void initState() {
-    _map = <int, void Function()>{
-      0: () => _productsDataSource.sort<DateTime>((Product p) => p.date, _sortAscending.value),
-      1: () => _productsDataSource.sort<String>((Product p) => p.reference, _sortAscending.value),
-      2: () => _productsDataSource.sort<String>((Product p) => p.name, _sortAscending.value),
-      3: () => _productsDataSource.sort<String>((Product p) => p.category, _sortAscending.value),
-      4: () => _productsDataSource.sort<num>((Product p) => p.newPrice, _sortAscending.value),
-      5: () => _productsDataSource.sort<num>((Product p) => p.quantity, _sortAscending.value),
-    };
-    super.initState();
-  }
 
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(_productSelections, 'selected_row_indices');
     registerForRestoration(_rowIndex, 'current_row_index');
     registerForRestoration(_rowsPerPage, 'rows_per_page');
-    registerForRestoration(_sortAscending, 'sort_ascending');
-    registerForRestoration(_sortColumnIndex, 'sort_column_index');
 
     if (!_initialized) {
-      _productsDataSource = ProductDataSource(context, _products, true, true, true, true);
+      _productsDataSource = ProductDataSource(context, _products, true, true, true);
       _initialized = true;
     }
-    _map[_sortColumnIndex.value];
-    _productsDataSource.updateSelectedProducts(_productSelections);
-    _productsDataSource.addListener(_updateSelectedproductRowListener);
   }
 
   @override
@@ -64,29 +46,11 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
       _productsDataSource = ProductDataSource(context, _products);
       _initialized = true;
     }
-    _productsDataSource.addListener(_updateSelectedproductRowListener);
-  }
-
-  void _updateSelectedproductRowListener() {
-    _productSelections.setProductSelections(_productsDataSource.products);
-  }
-
-  void sort<T>(Comparable<T> Function(Product p) getField, int columnIndex, bool ascending) {
-    _productsDataSource.sort<T>(getField, ascending);
-    _pagerKey.currentState!.setState(
-      () {
-        _sortColumnIndex.value = columnIndex;
-        _sortAscending.value = ascending;
-      },
-    );
   }
 
   @override
   void dispose() {
     _rowsPerPage.dispose();
-    _sortColumnIndex.dispose();
-    _sortAscending.dispose();
-    _productsDataSource.removeListener(_updateSelectedproductRowListener);
     _productsDataSource.dispose();
     _searchController.dispose();
     super.dispose();
@@ -101,14 +65,6 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
           children: <Widget>[
             Text("Products", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: greyColor)),
             const Spacer(),
-            RichText(
-              text: TextSpan(
-                children: <TextSpan>[
-                  TextSpan(text: "Products", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: purpleColor)),
-                  TextSpan(text: " / List Products", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor)),
-                ],
-              ),
-            ),
           ],
         ),
         Container(width: MediaQuery.sizeOf(context).width, height: .3, color: greyColor, margin: const EdgeInsets.symmetric(vertical: 20)),
@@ -127,9 +83,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
                     onRowsPerPageChanged: (int? value) => _(() => _rowsPerPage.value = value!),
                     initialFirstRowIndex: _rowIndex.value,
                     onPageChanged: (int rowIndex) => _(() => _rowIndex.value = rowIndex),
-                    sortColumnIndex: _sortColumnIndex.value,
-                    sortAscending: _sortAscending.value,
-                    columns: <DataColumn>[for (final String column in _columns) DataColumn(label: Text(column), onSort: (int columnIndex, bool ascending) => _map[columnIndex])],
+                    columns: <DataColumn>[for (final String column in _columns) DataColumn(label: Text(column))],
                     source: _productsDataSource,
                   );
                 },
