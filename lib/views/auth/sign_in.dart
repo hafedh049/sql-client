@@ -37,6 +37,8 @@ class _SignInState extends State<SignIn> {
   Future<void> _signIn(BuildContext context) async {
     if (_passwordController.text.trim().isEmpty) {
       showToast("Please enter a correct password", redColor);
+    } else if (_emailController.text.trim().isEmpty) {
+      showToast("Please enter a correct e-mail", redColor);
     } else {
       _passKey.currentState!.setState(() => _buttonState = true);
       _passKey.currentState!.setState(() => _buttonState = false);
