@@ -26,9 +26,9 @@ class _SignInState extends State<SignIn> {
 
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _emailState = false;
+  bool _usernameState = false;
 
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
 
   final GlobalKey<State> _passKey = GlobalKey<State>();
 
@@ -37,7 +37,7 @@ class _SignInState extends State<SignIn> {
   Future<void> _signIn(BuildContext context) async {
     if (_passwordController.text.trim().isEmpty) {
       showToast("Please enter a correct password", redColor);
-    } else if (_emailController.text.trim().isEmpty) {
+    } else if (_usernameController.text.trim().isEmpty) {
       showToast("Please enter a correct e-mail", redColor);
     } else {
       _passKey.currentState!.setState(() => _buttonState = true);
@@ -54,7 +54,7 @@ class _SignInState extends State<SignIn> {
   @override
   void dispose() {
     _passwordController.dispose();
-    _emailController.dispose();
+    _usernameController.dispose();
     super.dispose();
   }
 
@@ -93,16 +93,16 @@ class _SignInState extends State<SignIn> {
                       builder: (BuildContext context, void Function(void Function()) _) {
                         return TextField(
                           onChanged: (String value) => value.trim().length <= 1 ? _(() {}) : null,
-                          controller: _emailController,
+                          controller: _usernameController,
                           style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(20),
                             focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: purpleColor, width: 2, style: BorderStyle.solid)),
                             border: InputBorder.none,
-                            hintText: 'E-mail',
+                            hintText: 'Username',
                             hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
-                            prefixIcon: _emailController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
-                            suffixIcon: IconButton(onPressed: () => _(() => _emailState = !_emailState), icon: Icon(_emailState ? FontAwesome.eye_solid : FontAwesome.eye_slash_solid, size: 15, color: purpleColor)),
+                            prefixIcon: _usernameController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
+                            suffixIcon: IconButton(onPressed: () => _(() => _usernameState = !_usernameState), icon: Icon(_usernameState ? FontAwesome.eye_solid : FontAwesome.eye_slash_solid, size: 15, color: purpleColor)),
                           ),
                           cursorColor: purpleColor,
                         );
