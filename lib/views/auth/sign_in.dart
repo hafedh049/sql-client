@@ -26,8 +26,6 @@ class _SignInState extends State<SignIn> {
 
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _usernameState = false;
-
   final TextEditingController _usernameController = TextEditingController();
 
   final GlobalKey<State> _passKey = GlobalKey<State>();
@@ -102,7 +100,6 @@ class _SignInState extends State<SignIn> {
                             hintText: 'Username',
                             hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
                             prefixIcon: _usernameController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
-                            suffixIcon: IconButton(onPressed: () => _(() => _usernameState = !_usernameState), icon: Icon(_usernameState ? FontAwesome.eye_solid : FontAwesome.eye_slash_solid, size: 15, color: purpleColor)),
                           ),
                           cursorColor: purpleColor,
                         );
