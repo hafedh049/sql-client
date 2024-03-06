@@ -12,6 +12,8 @@ auto_commit.py
 # If you don't generate documentation locally you can remove this line.
 doc/api/
 web/
+test.py
+qrs/
 # dotenv environment variables file
 .env*
 
