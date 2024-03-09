@@ -67,7 +67,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
           children: <Widget>[
             Text("Products", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: greyColor)),
             const Spacer(),
-            IconButton(onPressed: () => showModalBottomSheet(context: context, builder: (BuildContext context) => const Settings()), icon: const Icon(FontAwesome.gears_solid, color: whiteColor, size: 25)),
+            IconButton(onPressed: () => showModalBottomSheet(context: context, builder: (BuildContext context) => const Settings()), icon: const Icon(FontAwesome.gears_solid, color: purpleColor, size: 25)),
           ],
         ),
         Container(width: MediaQuery.sizeOf(context).width, height: .3, color: greyColor, margin: const EdgeInsets.symmetric(vertical: 20)),

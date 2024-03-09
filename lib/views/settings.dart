@@ -55,9 +55,10 @@ class _SettingsState extends State<Settings> {
       padding: const EdgeInsets.all(16),
       child: AnimatedLoadingBorder(
         borderWidth: 4,
+        cornerRadius: 15,
         borderColor: purpleColor,
         child: Container(
-          color: darkColor,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: darkColor),
           width: MediaQuery.sizeOf(context).width * .7,
           padding: const EdgeInsets.all(24),
           child: Column(

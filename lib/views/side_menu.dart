@@ -57,7 +57,7 @@ class _SideMenuState extends State<SideMenu> {
     return Container(
       width: 400,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(color: darkColor, borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(color: darkColor.withOpacity(.1), borderRadius: BorderRadius.circular(15)),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

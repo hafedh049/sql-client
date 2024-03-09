@@ -59,7 +59,7 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: scaffoldColor,
+      //backgroundColor: scaffoldColor,
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Center(
