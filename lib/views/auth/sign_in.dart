@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:mysql1/mysql1.dart';
 import 'package:sql_client/utils/shared.dart';
 
 import '../../utils/callbacks.dart';
@@ -33,6 +34,12 @@ class _SignInState extends State<SignIn> {
   final String _password = "admin";
 
   Future<void> _signIn(BuildContext context) async {
+    var settings = ConnectionSettings(host: '127.0.0.1', port: 3306, user: 'root', password: null, db: 'test');
+    var conn = await MySqlConnection.connect(settings);
+    var results = await conn.query('select * from usr ');
+    for (var row in results) {
+      print('Name: ${row[0]}, email: ${row[1]}');
+    }
     if (_passwordController.text.trim().isEmpty) {
       showToast("Please enter a correct password", redColor);
     } else if (_usernameController.text.trim().isEmpty) {

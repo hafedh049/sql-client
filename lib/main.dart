@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sql_client/views/auth/sign_in.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const Main());
 }
 
