@@ -1,13 +1,12 @@
-import 'dart:convert';
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:animated_loading_border/animated_loading_border.dart';
-import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:mysql1/mysql1.dart';
 import 'package:sql_client/utils/shared.dart';
 
 import '../../utils/callbacks.dart';
@@ -31,27 +30,26 @@ class _SignInState extends State<SignIn> {
 
   final GlobalKey<State> _passKey = GlobalKey<State>();
 
-  final String _password = "admin";
-
   Future<void> _signIn(BuildContext context) async {
-    var settings = ConnectionSettings(host: '127.0.0.1', port: 3306, user: 'root', password: null, db: 'test');
-    var conn = await MySqlConnection.connect(settings);
-    var results = await conn.query('select * from usr ');
-    for (var row in results) {
-      print('Name: ${row[0]}, email: ${row[1]}');
-    }
     if (_passwordController.text.trim().isEmpty) {
-      showToast("Please enter a correct password", redColor);
+      showToast(context, "Please enter a correct password", redColor);
     } else if (_usernameController.text.trim().isEmpty) {
-      showToast("Please enter a correct e-mail", redColor);
+      showToast(context, "Please enter a correct e-mail", redColor);
     } else {
       _passKey.currentState!.setState(() => _buttonState = true);
       _passKey.currentState!.setState(() => _buttonState = false);
-      if (sha512.convert(utf8.encode(_passwordController.text)) == sha512.convert(utf8.encode(_password))) {
-        showToast("Welcome Back", greenColor);
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const Home()));
+      final response = await Dio().post("$url/login", data: <String, String>{"username": _usernameController.text, "password": _passwordController.text});
+
+      if (response.statusCode == 200) {
+        if (response.data["data"]["authorized"]) {
+          showToast(context, "Welcome Back", greenColor);
+          userData!.put("login", _usernameController.text);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const Home()));
+        } else {
+          showToast(context, "THIS USER IS NOT AUTHORIZED", redColor);
+        }
       } else {
-        showToast("Wrong Credentials", redColor);
+        showToast(context, "WRONG CREDENTIALS", redColor);
       }
     }
   }
@@ -86,7 +84,7 @@ class _SignInState extends State<SignIn> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Flexible(child: Text("Enter password to continue", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor))),
+                      Flexible(child: Text("Enter your credentials", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor))),
                       const SizedBox(width: 5),
                       Text("*", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: redColor)),
                     ],
@@ -150,7 +148,7 @@ class _SignInState extends State<SignIn> {
                             child: AnimatedButton(
                               width: 150,
                               height: 40,
-                              text: _buttonState ? "WAIT..." : 'CONTINUE',
+                              text: _buttonState ? "WAIT..." : 'SIGN-IN',
                               selectedTextColor: darkColor,
                               animatedOn: AnimatedOn.onHover,
                               animationDuration: 500.ms,

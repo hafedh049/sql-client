@@ -13,17 +13,18 @@ dependencies:
     sdk: flutter
 
   flutter_animate: ^4.5.0
-  fluttertoast: ^8.2.4
   icons_plus: ^5.0.0
   animated_loading_border: ^0.0.2
   google_fonts: ^6.1.0
   flutter_animated_button: ^2.0.3
-  crypto: ^3.0.3
   data_table_2: ^2.5.11
   date_format: ^2.0.7
   table_calendar: ^3.1.0
-  http: ^1.2.1
   mysql1: ^0.20.0
+  dio: ^5.4.1
+  hive: ^2.2.3
+  path_provider: ^2.1.2
+  toastification: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +38,4 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/configs/

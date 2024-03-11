@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:sql_client/utils/callbacks.dart';
 import 'package:sql_client/views/auth/sign_in.dart';
+
+import 'utils/shared.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  url = jsonDecode(await rootBundle.loadString("assets/configs/config.json"))["url"];
+  await init();
   runApp(const Main());
 }
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:sql_client/views/settings.dart';
-import '../models/products_model.dart';
 import '../utils/helpers/data_sources.dart';
 import '../utils/shared.dart';
 
@@ -19,12 +18,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
   final RestorableInt _rowsPerPage = RestorableInt(PaginatedDataTable.defaultRowsPerPage + 10);
   late ProductDataSource _productsDataSource;
   bool _initialized = false;
-  final List<String> _columns = <String>[for (int index = 0; index < 10; index += 1) "C$index"];
-  final GlobalKey<State> _pagerKey = GlobalKey<State>();
   final TextEditingController _searchController = TextEditingController();
-  final List<Product> _products = <Product>[
-    for (int index = 0; index < 100; index++) Product([for (int jndex = 0; jndex < 10; jndex += 1) "P$index$jndex"])
-  ];
 
   @override
   String get restorationId => 'paginated_product_table';
@@ -36,7 +30,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
     registerForRestoration(_rowsPerPage, 'rows_per_page');
 
     if (!_initialized) {
-      _productsDataSource = ProductDataSource(context, _products, true, true, true);
+      _productsDataSource = ProductDataSource(context, products, true, true, true);
       _initialized = true;
     }
   }
@@ -45,7 +39,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      _productsDataSource = ProductDataSource(context, _products);
+      _productsDataSource = ProductDataSource(context, products);
       _initialized = true;
     }
   }
@@ -67,7 +61,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
           children: <Widget>[
             Text("Products", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: greyColor)),
             const Spacer(),
-            IconButton(onPressed: () => showModalBottomSheet(context: context, builder: (BuildContext context) => const Settings()), icon: const Icon(FontAwesome.gears_solid, color: purpleColor, size: 25)),
+            IconButton(onPressed: () => showDialog(context: context, builder: (BuildContext context) => const AlertDialog(content: Settings())), icon: const Icon(FontAwesome.gears_solid, color: purpleColor, size: 25)),
           ],
         ),
         Container(width: MediaQuery.sizeOf(context).width, height: .3, color: greyColor, margin: const EdgeInsets.symmetric(vertical: 20)),
@@ -76,8 +70,9 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
             restorationId: restorationId,
             children: <Widget>[
               StatefulBuilder(
-                key: _pagerKey,
+                key: pagerKey,
                 builder: (BuildContext context, void Function(void Function()) _) {
+                  _productsDataSource = ProductDataSource(context, products, true, true, true);
                   return PaginatedDataTable(
                     showCheckboxColumn: false,
                     availableRowsPerPage: const <int>[20, 30],
@@ -86,7 +81,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
                     onRowsPerPageChanged: (int? value) => _(() => _rowsPerPage.value = value!),
                     initialFirstRowIndex: _rowIndex.value,
                     onPageChanged: (int rowIndex) => _(() => _rowIndex.value = rowIndex),
-                    columns: <DataColumn>[for (final String column in _columns) DataColumn(label: Text(column))],
+                    columns: <DataColumn>[for (final String column in columns) DataColumn(label: Text(column))],
                     source: _productsDataSource,
                   );
                 },

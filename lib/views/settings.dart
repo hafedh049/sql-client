@@ -20,23 +20,26 @@ class _SettingsState extends State<Settings> {
   bool _buttonState = false;
 
   final GlobalKey<State> _passKey = GlobalKey<State>();
-  final TextEditingController _rootController = TextEditingController(text: "root");
-  final TextEditingController _passwordController = TextEditingController(text: "");
-  final TextEditingController _localhostController = TextEditingController(text: "127.0.0.1");
-  final TextEditingController _dbController = TextEditingController(text: "my_db");
+  final TextEditingController _rootController = TextEditingController(text: userData!.get("username"));
+  final TextEditingController _passwordController = TextEditingController(text: userData!.get("password") ?? "");
+  final TextEditingController _localhostController = TextEditingController(text: userData!.get("host"));
+  final TextEditingController _dbController = TextEditingController(text: userData!.get("db"));
 
-  Future<void> _connectMySQL() async {
+  Future<void> _connectMySQL(BuildContext context) async {
     _buttonState = false;
-    if (_rootController.text != "root") {
-      showToast("Please enter a correct username", redColor);
-    } else if (_passwordController.text != "") {
-      showToast("Please enter a correct password", redColor);
+    if (_rootController.text.isEmpty) {
+      showToast(context, "Please enter a correct username", redColor);
     } else if (_localhostController.text.trim().isEmpty) {
-      showToast("Please enter a correct localhost", redColor);
+      showToast(context, "Please enter a correct localhost", redColor);
     } else if (_dbController.text.trim().isEmpty) {
-      showToast("Please enter a correct database name", redColor);
+      showToast(context, "Please enter a correct database name", redColor);
     } else {
       _buttonState = true;
+      userData!.put("username", _rootController.text);
+      userData!.put("password", _passwordController.text.isEmpty ? null : _passwordController.text);
+      userData!.put("host", _localhostController.text);
+      userData!.put("db", _dbController.text);
+      Navigator.pop(context);
     }
   }
 
@@ -65,7 +68,7 @@ class _SettingsState extends State<Settings> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text("Welcome", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: greyColor)),
+              Text("DATABASE CONNECTION", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: greyColor)),
               Container(width: MediaQuery.sizeOf(context).width, height: .3, color: greyColor, margin: const EdgeInsets.symmetric(vertical: 20)),
               const SizedBox(height: 20),
               Container(
@@ -158,34 +161,53 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
               const SizedBox(height: 20),
-              StatefulBuilder(
-                key: _passKey,
-                builder: (BuildContext context, void Function(void Function()) _) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      IgnorePointer(
-                        ignoring: _buttonState,
-                        child: AnimatedButton(
-                          width: 150,
-                          height: 40,
-                          text: _buttonState ? "WAIT..." : 'CONTINUE',
-                          selectedTextColor: darkColor,
-                          animatedOn: AnimatedOn.onHover,
-                          animationDuration: 500.ms,
-                          isReverse: true,
-                          selectedBackgroundColor: redColor,
-                          backgroundColor: purpleColor,
-                          transitionType: TransitionType.TOP_TO_BOTTOM,
-                          textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-                          onPress: () async => await _connectMySQL(),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      AnimatedOpacity(opacity: _buttonState ? 1 : 0, duration: 300.ms, child: const Icon(FontAwesome.bookmark_solid, color: purpleColor, size: 35)),
-                    ],
-                  );
-                },
+              Row(
+                children: <Widget>[
+                  StatefulBuilder(
+                    key: _passKey,
+                    builder: (BuildContext context, void Function(void Function()) _) {
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IgnorePointer(
+                            ignoring: _buttonState,
+                            child: AnimatedButton(
+                              width: 150,
+                              height: 40,
+                              text: _buttonState ? "WAIT..." : 'SAVE',
+                              selectedTextColor: darkColor,
+                              animatedOn: AnimatedOn.onHover,
+                              animationDuration: 500.ms,
+                              isReverse: true,
+                              selectedBackgroundColor: purpleColor,
+                              backgroundColor: purpleColor,
+                              transitionType: TransitionType.TOP_TO_BOTTOM,
+                              textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
+                              onPress: () async => await _connectMySQL(context),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          AnimatedOpacity(opacity: _buttonState ? 1 : 0, duration: 300.ms, child: const Icon(FontAwesome.bookmark_solid, color: purpleColor, size: 35)),
+                        ],
+                      );
+                    },
+                  ),
+                  const Spacer(),
+                  AnimatedButton(
+                    width: 150,
+                    height: 40,
+                    text: "CANCEL",
+                    selectedTextColor: darkColor,
+                    animatedOn: AnimatedOn.onHover,
+                    animationDuration: 500.ms,
+                    isReverse: true,
+                    selectedBackgroundColor: redColor,
+                    backgroundColor: redColor,
+                    transitionType: TransitionType.TOP_TO_BOTTOM,
+                    textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
+                    onPress: () => Navigator.pop(context),
+                  ),
+                ],
               ),
             ],
           ),

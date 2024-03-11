@@ -1,0 +1,31 @@
+{
+    "users": {
+        "username1": {
+            "id": "0",
+            "authorized": true,
+            "password": "pwd",
+            "querys": {
+                "0": "select * from usr;",
+                "1": "select id as UID from usr"
+            },
+            "queryWithDate": "select * from data where x<%FROM% and x>%TO%"
+        },
+        "username2": {
+            "authorized": true,
+            "id": "d1530027-8f4e-4fac-a77a-0b20cacdb16d",
+            "password": "pwdd",
+            "querys": {
+                "0": "insert into usr(nam) values('blablalbalbala');"
+            },
+            "queryWithDate": ""
+        },
+        "username3": {
+            "authorized": true,
+            "id": "7a375fe2-5880-4da4-b6d9-597dd730030c",
+            "password": "pwd",
+            "querys": {},
+            "queryWithDate": ""
+        }
+    },
+    "totalQuerys": 4
+}

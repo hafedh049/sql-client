@@ -11,5 +11,16 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Padding(padding: EdgeInsets.all(24), child: Row(children: <Widget>[Expanded(child: SQLTable()), SizedBox(width: 20), SideMenu()])));
+  Widget build(BuildContext context) => const Scaffold(
+        body: Padding(
+          padding: EdgeInsets.all(24),
+          child: Row(
+            children: <Widget>[
+              Expanded(child: SQLTable()),
+              SizedBox(width: 20),
+              SideMenu(),
+            ],
+          ),
+        ),
+      );
 }

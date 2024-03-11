@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sql_client/utils/shared.dart';
+import 'package:toastification/toastification.dart';
 
-void showToast(String message, Color color) {
-  Fluttertoast.showToast(
-    msg: message,
-    backgroundColor: color,
-    fontSize: 16,
-    textColor: whiteColor,
-    timeInSecForIosWeb: 2,
-    webPosition: "right",
-    webShowClose: true,
-    toastLength: Toast.LENGTH_LONG,
-    gravity: ToastGravity.BOTTOM_RIGHT,
-    webBgColor: "rgb(${color.red},${color.green},${color.blue})",
+void showToast(BuildContext context, String message, Color color) {
+  toastification.show(
+    context: context,
+    title: Text(message),
+    autoCloseDuration: const Duration(seconds: 5),
   );
+}
+
+Future<void> init() async {
+  Hive.init((await getApplicationDocumentsDirectory()).path);
+  userData = await Hive.openBox("userData");
+  if (!userData!.containsKey("username")) {
+    userData!.put("username", "root");
+  }
+  if (!userData!.containsKey("password")) {
+    userData!.put("password", null);
+  }
+  if (!userData!.containsKey("host")) {
+    userData!.put("host", "127.0.0.1");
+  }
+  if (!userData!.containsKey("db")) {
+    userData!.put("db", "test");
+  }
 }

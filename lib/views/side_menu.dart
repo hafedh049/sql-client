@@ -1,13 +1,18 @@
+import 'dart:math';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:mysql1/mysql1.dart';
+import 'package:sql_client/models/products_model.dart';
+import 'package:sql_client/utils/callbacks.dart';
 import 'package:sql_client/utils/shared.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-import '../utils/callbacks.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
@@ -27,23 +32,46 @@ class _SideMenuState extends State<SideMenu> {
 
   final TextEditingController _hoursController = TextEditingController();
 
-  final List<Map<String, dynamic>> _runSQLQueries = List<Map<String, dynamic>>.generate(
-    10,
-    (int index) => <String, dynamic>{
-      "name": "Run SQL Query",
-      "callback": () => showToast("Run SQL Query clicked", greenColor),
-    },
-  );
+  List<Map<String, dynamic>> _runSQLQueries = <Map<String, dynamic>>[];
 
   final List<Map<String, dynamic>> _exportCSVs = List<Map<String, dynamic>>.generate(
     2,
     (int index) => <String, dynamic>{
       "name": "Export Table as CSV",
-      "callback": () => showToast("Table exported as CSV", greenColor),
+      "callback": () {},
     },
   );
-
   final PageController _dateController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<List<Map<String, dynamic>>> _loadQueries() async {
+    final Dio dio = Dio();
+    final int nbQueries = (await dio.get("$url/totalQuerys")).data["totalQuerys"];
+    final Map<String, dynamic> queriesResponse = (await dio.get("$url/getUserQuerys", data: <String, String>{"username": userData!.get("login")})).data["Querys"];
+    return <Map<String, dynamic>>[
+      for (int index = 0; index < min(nbQueries, queriesResponse.length); index += 1)
+        <String, dynamic>{
+          "name": "Run SQL Query",
+          "callback": () async {
+            final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: 3306, user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
+            final MySqlConnection conn = await MySqlConnection.connect(settings);
+            final Results results = await conn.query(queriesResponse[index.toString()]);
+            if (queriesResponse[index.toString()].toLowerCase().contains("select")) {
+              columns = results.fields.map((Field e) => e.name!).toList();
+              products = [for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
+              pagerKey.currentState!.setState(() {});
+            } else {
+              // ignore: use_build_context_synchronously
+              showToast(context, results.affectedRows! != 0 ? "Query Executed Successfully" : "Query Failed", results.affectedRows! != 0 ? purpleColor : redColor);
+            }
+          },
+        },
+    ];
+  }
 
   @override
   void dispose() {
@@ -62,22 +90,39 @@ class _SideMenuState extends State<SideMenu> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            for (Map<String, dynamic> runSQL in _runSQLQueries) ...<Widget>[
-              AnimatedButton(
-                height: 40,
-                text: runSQL["name"],
-                selectedTextColor: darkColor,
-                animatedOn: AnimatedOn.onHover,
-                animationDuration: 500.ms,
-                isReverse: true,
-                selectedBackgroundColor: redColor,
-                backgroundColor: purpleColor,
-                transitionType: TransitionType.TOP_TO_BOTTOM,
-                textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-                onPress: runSQL["callback"],
-              ),
-              const SizedBox(height: 20),
-            ],
+            FutureBuilder<List<Map<String, dynamic>>>(
+                future: _loadQueries(),
+                builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                  if (snapshot.hasData) {
+                    _runSQLQueries = snapshot.data!;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        for (Map<String, dynamic> runSQL in _runSQLQueries) ...<Widget>[
+                          AnimatedButton(
+                            height: 40,
+                            text: runSQL["name"],
+                            selectedTextColor: darkColor,
+                            animatedOn: AnimatedOn.onHover,
+                            animationDuration: 500.ms,
+                            isReverse: true,
+                            selectedBackgroundColor: redColor,
+                            backgroundColor: purpleColor,
+                            transitionType: TransitionType.TOP_TO_BOTTOM,
+                            textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
+                            onPress: runSQL["callback"],
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ],
+                    );
+                  } else if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator(color: purpleColor);
+                  } else {
+                    return Text(snapshot.error.toString());
+                  }
+                }),
             const SizedBox(height: 20),
             for (Map<String, dynamic> export in _exportCSVs) ...<Widget>[
               AnimatedButton(
@@ -106,7 +151,9 @@ class _SideMenuState extends State<SideMenu> {
               backgroundColor: purpleColor,
               transitionType: TransitionType.TOP_TO_BOTTOM,
               textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-              onPress: () {},
+              onPress: () {
+                //DATE TODO
+              },
             ),
             const SizedBox(height: 20),
             Row(
