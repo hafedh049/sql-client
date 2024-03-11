@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:sql_client/views/settings.dart';
 import '../utils/helpers/data_sources.dart';
@@ -59,7 +58,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
       children: <Widget>[
         Row(
           children: <Widget>[
-            Text("Products", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: greyColor)),
+            Image.asset("assets/images/logo.png", scale: 6),
             const Spacer(),
             IconButton(onPressed: () => showDialog(context: context, builder: (BuildContext context) => const AlertDialog(content: Settings())), icon: const Icon(FontAwesome.gears_solid, color: purpleColor, size: 25)),
           ],
