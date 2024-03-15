@@ -264,25 +264,34 @@ class _SideMenuState extends State<SideMenu> {
                 String query = (await Dio().get("$url/queryWithTime", data: <String, String>{"username": userData!.get("login")})).data["Querys"];
                 final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: 3306, user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
                 final MySqlConnection conn = await MySqlConnection.connect(settings);
-                Results results = await conn.query(
-                  query
-                      .replaceAll("/fd/", _fromSelectedDay.day.toString())
-                      .replaceAll("/fm/", _fromSelectedDay.month.toString())
-                      .replaceAll("/fy/", _fromSelectedDay.year.toString())
-                      .replaceAll(
-                        "/h/",
-                        _hoursController.text,
-                      )
-                      .replaceAll("/td/", _toSelectedDay.day.toString())
-                      .replaceAll("/tm/", _toSelectedDay.month.toString())
-                      .replaceAll("/ty/", _toSelectedDay.year.toString()),
-                );
-                columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
-                pagerKey.currentState!.setState(
-                  () {
-                    products = <Product>[for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
-                  },
-                );
+                if (query.toLowerCase().startsWith("select")) {
+                  Results results = await conn.query(
+                    query
+                        .replaceAll("/fd/", _fromSelectedDay.day.toString())
+                        .replaceAll("/fm/", _fromSelectedDay.month.toString())
+                        .replaceAll("/fy/", _fromSelectedDay.year.toString())
+                        .replaceAll(
+                          "/h/",
+                          _hoursController.text,
+                        )
+                        .replaceAll("/td/", _toSelectedDay.day.toString())
+                        .replaceAll("/tm/", _toSelectedDay.month.toString())
+                        .replaceAll("/ty/", _toSelectedDay.year.toString()),
+                  );
+                  columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
+                  pagerKey.currentState!.setState(
+                    () {
+                      products = <Product>[for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
+                    },
+                  );
+                } else {
+                  Results results = await conn.query(query);
+                  if (results.affectedRows != 0) {
+                  } else {
+                    // ignore: use_build_context_synchronously
+                    showToast(context, "UPDATE COMPLETED", greenColor);
+                  }
+                }
               },
             ),
             const SizedBox(height: 20),
