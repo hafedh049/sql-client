@@ -1,12 +1,10 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:date_format/date_format.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -59,7 +57,7 @@ class _SideMenuState extends State<SideMenu> {
             showDialog(
               context: context,
               builder: (BuildContext context) => AlertDialog(
-                backgroundColor: darkColor,
+                backgroundColor: whiteColor,
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -73,7 +71,7 @@ class _SideMenuState extends State<SideMenu> {
                           highlightColor: transparentColor,
                           onTap: () => _fileNameController.text = List<String>.generate(8, (int index) => Random().nextInt(10).toString()).join(),
                           child: Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: purpleColor),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: blueColor),
                             padding: const EdgeInsets.all(8),
                             child: Text('GENERATE', style: GoogleFonts.itim(color: whiteColor, fontSize: 16, fontWeight: FontWeight.w500)),
                           ),
@@ -82,22 +80,21 @@ class _SideMenuState extends State<SideMenu> {
                     ),
                     const SizedBox(height: 20),
                     Container(
-                      decoration: BoxDecoration(color: scaffoldColor, borderRadius: BorderRadius.circular(3)),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(3)),
                       child: StatefulBuilder(
                         builder: (BuildContext context, void Function(void Function()) _) {
                           return TextField(
                             onChanged: (String value) => value.trim().length <= 1 ? _(() {}) : null,
                             controller: _fileNameController,
-                            style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                            style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(20),
-                              focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: purpleColor, width: 2, style: BorderStyle.solid)),
-                              border: InputBorder.none,
+                              border: const OutlineInputBorder(borderSide: BorderSide(color: darkColor, width: 2, style: BorderStyle.solid)),
                               hintText: 'CSV file name',
-                              hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                              hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                               prefixIcon: _fileNameController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                             ),
-                            cursorColor: purpleColor,
+                            cursorColor: blueColor,
                           );
                         },
                       ),
@@ -129,7 +126,7 @@ class _SideMenuState extends State<SideMenu> {
                             }
                           },
                           child: Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: purpleColor),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: blueColor),
                             padding: const EdgeInsets.all(8),
                             child: Text('SAVE CSV', style: GoogleFonts.itim(color: whiteColor, fontSize: 16, fontWeight: FontWeight.w500)),
                           ),
@@ -177,7 +174,7 @@ class _SideMenuState extends State<SideMenu> {
               pagerKey.currentState!.setState(() {});
             } else {
               // ignore: use_build_context_synchronously
-              showToast(context, results.affectedRows! != 0 ? "Query Executed Successfully" : "Query Failed", results.affectedRows! != 0 ? purpleColor : redColor);
+              showToast(context, results.affectedRows! != 0 ? "Query Executed Successfully" : "Query Failed", results.affectedRows! != 0 ? blueColor : redColor);
             }
           },
         },
@@ -219,8 +216,8 @@ class _SideMenuState extends State<SideMenu> {
                             animatedOn: AnimatedOn.onHover,
                             animationDuration: 500.ms,
                             isReverse: true,
-                            selectedBackgroundColor: redColor,
-                            backgroundColor: purpleColor,
+                            selectedBackgroundColor: greenColor,
+                            backgroundColor: blueColor,
                             transitionType: TransitionType.TOP_TO_BOTTOM,
                             textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
                             onPress: runSQL["callback"],
@@ -230,7 +227,7 @@ class _SideMenuState extends State<SideMenu> {
                       ],
                     );
                   } else if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(color: purpleColor);
+                    return const CircularProgressIndicator(color: blueColor);
                   } else {
                     return Text(snapshot.error.toString());
                   }
@@ -244,8 +241,8 @@ class _SideMenuState extends State<SideMenu> {
                 animatedOn: AnimatedOn.onHover,
                 animationDuration: 500.ms,
                 isReverse: true,
-                selectedBackgroundColor: redColor,
-                backgroundColor: purpleColor,
+                selectedBackgroundColor: greenColor,
+                backgroundColor: blueColor,
                 transitionType: TransitionType.TOP_TO_BOTTOM,
                 textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
                 onPress: export["callback"],
@@ -259,84 +256,33 @@ class _SideMenuState extends State<SideMenu> {
               animatedOn: AnimatedOn.onHover,
               animationDuration: 500.ms,
               isReverse: true,
-              selectedBackgroundColor: redColor,
-              backgroundColor: purpleColor,
+              selectedBackgroundColor: greenColor,
+              backgroundColor: blueColor,
               transitionType: TransitionType.TOP_TO_BOTTOM,
               textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
               onPress: () async {
-                /*
-                  /FROM/ -> 2021-01-01 00
-                  /F/ -> 2021-01-01
-                  /f/ -> 00
-                  */
-                /*
-                  DATE - format: YYYY-MM-DD.
-                  DATETIME - format: YYYY-MM-DD HH:MI:SS.
-                  TIMESTAMP - format: YYYY-MM-DD HH:MI:SS.
-                  YEAR - format YYYY or YY.
-                  */
                 String query = (await Dio().get("$url/queryWithTime", data: <String, String>{"username": userData!.get("login")})).data["Querys"];
                 final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: 3306, user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
                 final MySqlConnection conn = await MySqlConnection.connect(settings);
-                Results? results;
-                if (query.toUpperCase().contains("/FROM/")) {
-                  results = await conn.query(
-                    query
-                        .replaceAll(
-                          "/FROM/",
-                          formatDate(
-                            _fromSelectedDay,
-                            <String>[yyyy, "-", mm, "-", dd, " ", _hoursController.text, ":00", ":00"],
-                          ),
-                        )
-                        .replaceAll(
-                          "/TO/",
-                          formatDate(
-                            _toSelectedDay,
-                            <String>[yyyy, "-", mm, "-", dd, " ", _hoursController.text, ":00", ":00"],
-                          ),
-                        ),
-                  );
-                } else if (query.contains("/F/")) {
-                  results = await conn.query(
-                    query
-                        .replaceAll(
-                          "/F/",
-                          formatDate(
-                            _fromSelectedDay,
-                            const <String>[yyyy, "-", mm, "-", dd],
-                          ),
-                        )
-                        .replaceAll(
-                          "/T/",
-                          formatDate(
-                            _toSelectedDay,
-                            const <String>[yyyy, "-", mm, "-", dd],
-                          ),
-                        ),
-                  );
-                } else {
-                  results = await conn.query(
-                    query
-                        .replaceAll(
-                          "/f/",
-                          formatDate(
-                            _fromSelectedDay,
-                            <String>[_hoursController.text, ":00", ":00"],
-                          ),
-                        )
-                        .replaceAll(
-                          "/t/",
-                          formatDate(
-                            _toSelectedDay,
-                            <String>[_hoursController.text, ":00", ":00"],
-                          ),
-                        ),
-                  );
-                }
+                Results results = await conn.query(
+                  query
+                      .replaceAll("/fd/", _fromSelectedDay.day.toString())
+                      .replaceAll("/fm/", _fromSelectedDay.month.toString())
+                      .replaceAll("/fy/", _fromSelectedDay.year.toString())
+                      .replaceAll(
+                        "/h/",
+                        _hoursController.text,
+                      )
+                      .replaceAll("/td/", _toSelectedDay.day.toString())
+                      .replaceAll("/tm/", _toSelectedDay.month.toString())
+                      .replaceAll("/ty/", _toSelectedDay.year.toString()),
+                );
                 columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
-                products = <Product>[for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
-                pagerKey.currentState!.setState(() {});
+                pagerKey.currentState!.setState(
+                  () {
+                    products = <Product>[for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
+                  },
+                );
               },
             ),
             const SizedBox(height: 20),
@@ -350,7 +296,7 @@ class _SideMenuState extends State<SideMenu> {
                     highlightColor: transparentColor,
                     child: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: lightblueColor),
                       child: Text("FROM", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor)),
                     ),
                   ),
@@ -364,7 +310,7 @@ class _SideMenuState extends State<SideMenu> {
                     highlightColor: transparentColor,
                     child: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: scaffoldColor),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: lightblueColor),
                       child: Text("TO", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor)),
                     ),
                   ),
@@ -373,23 +319,22 @@ class _SideMenuState extends State<SideMenu> {
             ),
             const SizedBox(height: 20),
             Container(
-              decoration: BoxDecoration(color: scaffoldColor, borderRadius: BorderRadius.circular(3)),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(3)),
               child: StatefulBuilder(
                 builder: (BuildContext context, void Function(void Function()) _) {
                   return TextField(
                     onChanged: (String value) => value.trim().length <= 1 ? _(() {}) : null,
                     controller: _hoursController,
-                    style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                    style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(20),
-                      focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: purpleColor, width: 2, style: BorderStyle.solid)),
-                      border: InputBorder.none,
+                      border: const OutlineInputBorder(borderSide: BorderSide(color: lightblueColor, width: 2, style: BorderStyle.solid)),
                       hintText: 'Hours',
-                      hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                      hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                       prefixIcon: _hoursController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                     ),
                     inputFormatters: <TextInputFormatter>[LengthLimitingTextInputFormatter(2), FilteringTextInputFormatter.digitsOnly],
-                    cursorColor: purpleColor,
+                    cursorColor: blueColor,
                   );
                 },
               ),
@@ -400,62 +345,70 @@ class _SideMenuState extends State<SideMenu> {
               child: PageView(
                 controller: _dateController,
                 children: <Widget>[
-                  TableCalendar(
-                    firstDay: DateTime(1970),
-                    lastDay: DateTime(2300),
-                    focusedDay: _fromFocusedDay,
-                    calendarFormat: _fromCalendarFormat,
-                    selectedDayPredicate: (DateTime day) => isSameDay(_fromSelectedDay, day),
-                    onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-                      if (!isSameDay(_fromSelectedDay, selectedDay)) {
-                        setState(
-                          () {
-                            _fromSelectedDay = selectedDay;
-                            _fromFocusedDay = focusedDay;
-                          },
-                        );
-                      }
-                    },
-                    onFormatChanged: (CalendarFormat format) {
-                      if (_fromCalendarFormat != format) {
-                        setState(
-                          () {
-                            _fromCalendarFormat = format;
-                          },
-                        );
-                      }
-                    },
-                    onPageChanged: (DateTime focusedDay) {
-                      _fromFocusedDay = focusedDay;
+                  StatefulBuilder(
+                    builder: (BuildContext context, void Function(void Function()) _) {
+                      return TableCalendar(
+                        firstDay: DateTime(1970),
+                        lastDay: DateTime(2300),
+                        focusedDay: _fromFocusedDay,
+                        calendarFormat: _fromCalendarFormat,
+                        selectedDayPredicate: (DateTime day) => isSameDay(_fromSelectedDay, day),
+                        onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+                          if (!isSameDay(_fromSelectedDay, selectedDay)) {
+                            _(
+                              () {
+                                _fromSelectedDay = selectedDay;
+                                _fromFocusedDay = focusedDay;
+                              },
+                            );
+                          }
+                        },
+                        onFormatChanged: (CalendarFormat format) {
+                          if (_fromCalendarFormat != format) {
+                            _(
+                              () {
+                                _fromCalendarFormat = format;
+                              },
+                            );
+                          }
+                        },
+                        onPageChanged: (DateTime focusedDay) {
+                          _fromFocusedDay = focusedDay;
+                        },
+                      );
                     },
                   ),
-                  TableCalendar(
-                    firstDay: DateTime(1970),
-                    lastDay: DateTime(2300),
-                    focusedDay: _toFocusedDay,
-                    calendarFormat: _toCalendarFormat,
-                    selectedDayPredicate: (DateTime day) => isSameDay(_toSelectedDay, day),
-                    onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-                      if (!isSameDay(_toSelectedDay, selectedDay)) {
-                        setState(
-                          () {
-                            _toSelectedDay = selectedDay;
-                            _toFocusedDay = focusedDay;
-                          },
-                        );
-                      }
-                    },
-                    onFormatChanged: (CalendarFormat format) {
-                      if (_toCalendarFormat != format) {
-                        setState(
-                          () {
-                            _toCalendarFormat = format;
-                          },
-                        );
-                      }
-                    },
-                    onPageChanged: (DateTime focusedDay) {
-                      _toFocusedDay = focusedDay;
+                  StatefulBuilder(
+                    builder: (BuildContext context, void Function(void Function()) _) {
+                      return TableCalendar(
+                        firstDay: DateTime(1970),
+                        lastDay: DateTime(2300),
+                        focusedDay: _toFocusedDay,
+                        calendarFormat: _toCalendarFormat,
+                        selectedDayPredicate: (DateTime day) => isSameDay(_toSelectedDay, day),
+                        onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+                          if (!isSameDay(_toSelectedDay, selectedDay)) {
+                            _(
+                              () {
+                                _toSelectedDay = selectedDay;
+                                _toFocusedDay = focusedDay;
+                              },
+                            );
+                          }
+                        },
+                        onFormatChanged: (CalendarFormat format) {
+                          if (_toCalendarFormat != format) {
+                            _(
+                              () {
+                                _toCalendarFormat = format;
+                              },
+                            );
+                          }
+                        },
+                        onPageChanged: (DateTime focusedDay) {
+                          _toFocusedDay = focusedDay;
+                        },
+                      );
                     },
                   ),
                 ],

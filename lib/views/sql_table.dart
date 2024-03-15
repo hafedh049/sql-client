@@ -60,10 +60,10 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
           children: <Widget>[
             Image.asset("assets/images/logo.png", scale: 6),
             const Spacer(),
-            IconButton(onPressed: () => showDialog(context: context, builder: (BuildContext context) => const AlertDialog(content: Settings())), icon: const Icon(FontAwesome.gears_solid, color: purpleColor, size: 25)),
+            IconButton(onPressed: () => showDialog(context: context, builder: (BuildContext context) => const AlertDialog(content: Settings())), icon: const Icon(FontAwesome.gears_solid, color: blueColor, size: 25)),
           ],
         ),
-        Container(width: MediaQuery.sizeOf(context).width, height: .3, color: greyColor, margin: const EdgeInsets.symmetric(vertical: 20)),
+        Container(width: MediaQuery.sizeOf(context).width, height: .3, color: darkColor, margin: const EdgeInsets.symmetric(vertical: 20)),
         Expanded(
           child: ListView(
             restorationId: restorationId,
@@ -75,7 +75,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
                   return PaginatedDataTable(
                     showCheckboxColumn: false,
                     availableRowsPerPage: const <int>[20, 30],
-                    arrowHeadColor: purpleColor,
+                    arrowHeadColor: blueColor,
                     rowsPerPage: _rowsPerPage.value,
                     onRowsPerPageChanged: (int? value) => _(() => _rowsPerPage.value = value!),
                     initialFirstRowIndex: _rowIndex.value,

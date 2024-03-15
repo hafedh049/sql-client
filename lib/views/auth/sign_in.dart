@@ -70,50 +70,50 @@ class _SignInState extends State<SignIn> {
         child: Center(
           child: AnimatedLoadingBorder(
             borderWidth: 4,
-            borderColor: purpleColor,
+            borderColor: blueColor,
             child: Container(
-              color: darkColor,
+              color: lightblueColor.withOpacity(.1),
               width: MediaQuery.sizeOf(context).width * .7,
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text("Welcome", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: greyColor)),
-                  Container(width: MediaQuery.sizeOf(context).width, height: .3, color: greyColor, margin: const EdgeInsets.symmetric(vertical: 20)),
+                  Text("Welcome", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: darkColor)),
+                  Container(width: MediaQuery.sizeOf(context).width, height: .3, color: darkColor, margin: const EdgeInsets.symmetric(vertical: 20)),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Flexible(child: Text("Enter your credentials", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor))),
+                      Flexible(child: Text("Enter your credentials", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor))),
                       const SizedBox(width: 5),
                       Text("*", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: redColor)),
                     ],
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    decoration: BoxDecoration(color: scaffoldColor, borderRadius: BorderRadius.circular(3)),
+                    decoration: BoxDecoration(color: lightblueColor.withOpacity(.1), borderRadius: BorderRadius.circular(5)),
                     child: StatefulBuilder(
                       builder: (BuildContext context, void Function(void Function()) _) {
                         return TextField(
                           onChanged: (String value) => value.trim().length <= 1 ? _(() {}) : null,
                           controller: _usernameController,
-                          style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                          style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(20),
-                            focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: purpleColor, width: 2, style: BorderStyle.solid)),
+                            focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
                             border: InputBorder.none,
                             hintText: 'Username',
-                            hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                            hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                             prefixIcon: _usernameController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                           ),
-                          cursorColor: purpleColor,
+                          cursorColor: blueColor,
                         );
                       },
                     ),
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    decoration: BoxDecoration(color: scaffoldColor, borderRadius: BorderRadius.circular(3)),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
                     child: StatefulBuilder(
                       builder: (BuildContext context, void Function(void Function()) _) {
                         return TextField(
@@ -121,17 +121,17 @@ class _SignInState extends State<SignIn> {
                           onSubmitted: (String value) async => await _signIn(context),
                           onChanged: (String value) => value.trim().length <= 1 ? _(() {}) : null,
                           controller: _passwordController,
-                          style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                          style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.all(20),
-                            focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: purpleColor, width: 2, style: BorderStyle.solid)),
+                            focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
                             border: InputBorder.none,
                             hintText: 'Password',
-                            hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: greyColor),
+                            hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                             prefixIcon: _passwordController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
-                            suffixIcon: IconButton(onPressed: () => _(() => _passwordState = !_passwordState), icon: Icon(_passwordState ? FontAwesome.eye_solid : FontAwesome.eye_slash_solid, size: 15, color: purpleColor)),
+                            suffixIcon: IconButton(onPressed: () => _(() => _passwordState = !_passwordState), icon: Icon(_passwordState ? FontAwesome.eye_solid : FontAwesome.eye_slash_solid, size: 15, color: blueColor)),
                           ),
-                          cursorColor: purpleColor,
+                          cursorColor: blueColor,
                         );
                       },
                     ),
@@ -154,14 +154,14 @@ class _SignInState extends State<SignIn> {
                               animationDuration: 500.ms,
                               isReverse: true,
                               selectedBackgroundColor: redColor,
-                              backgroundColor: purpleColor,
+                              backgroundColor: blueColor,
                               transitionType: TransitionType.TOP_TO_BOTTOM,
                               textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
                               onPress: () async => await _signIn(context),
                             ),
                           ),
                           const SizedBox(width: 10),
-                          AnimatedOpacity(opacity: _buttonState ? 1 : 0, duration: 300.ms, child: const Icon(FontAwesome.bookmark_solid, color: purpleColor, size: 35)),
+                          AnimatedOpacity(opacity: _buttonState ? 1 : 0, duration: 300.ms, child: const Icon(FontAwesome.bookmark_solid, color: blueColor, size: 35)),
                         ],
                       );
                     },
