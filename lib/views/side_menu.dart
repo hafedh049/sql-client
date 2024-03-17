@@ -163,7 +163,7 @@ class _SideMenuState extends State<SideMenu> {
     return <Map<String, dynamic>>[
       for (int index = 0; index < min(nbQueries, queriesResponse.length); index += 1)
         <String, dynamic>{
-          "name": "Run SQL Query",
+          "name": "Run SQL Query ${index + 1}",
           "callback": () async {
             final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: 3306, user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
             final MySqlConnection conn = await MySqlConnection.connect(settings);
