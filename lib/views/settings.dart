@@ -28,11 +28,11 @@ class _SettingsState extends State<Settings> {
   Future<void> _connectMySQL(BuildContext context) async {
     _buttonState = false;
     if (_rootController.text.isEmpty) {
-      showToast(context, "Please enter a correct username", redColor);
+      showToast(context, "Por favor ingrese un nombre de usuario correcto", redColor);
     } else if (_localhostController.text.trim().isEmpty) {
-      showToast(context, "Please enter a correct localhost", redColor);
+      showToast(context, "Por favor ingrese un host local correcto", redColor);
     } else if (_dbController.text.trim().isEmpty) {
-      showToast(context, "Please enter a correct database name", redColor);
+      showToast(context, "Por favor ingrese un nombre de base de datos correcto", redColor);
     } else {
       _buttonState = true;
       userData!.put("username", _rootController.text);
@@ -68,7 +68,7 @@ class _SettingsState extends State<Settings> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text("DATABASE CONNECTION", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: darkColor)),
+              Text("CONEXIÓN DE BASE DE DATOS", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: darkColor)),
               Container(width: MediaQuery.sizeOf(context).width, height: .3, color: darkColor, margin: const EdgeInsets.symmetric(vertical: 20)),
               const SizedBox(height: 20),
               Container(
@@ -82,7 +82,7 @@ class _SettingsState extends State<Settings> {
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(20),
                         border: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
-                        hintText: 'Username',
+                        hintText: 'Nombre de usuario',
                         hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                         prefixIcon: _rootController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                       ),
@@ -104,7 +104,7 @@ class _SettingsState extends State<Settings> {
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(20),
                         border: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
-                        hintText: 'Password',
+                        hintText: 'Contraseña',
                         hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                         prefixIcon: _passwordController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                         suffixIcon: IconButton(onPressed: () => _(() => _passwordState = !_passwordState), icon: Icon(_passwordState ? FontAwesome.eye_solid : FontAwesome.eye_slash_solid, size: 15, color: blueColor)),
@@ -126,7 +126,7 @@ class _SettingsState extends State<Settings> {
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(20),
                         border: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
-                        hintText: 'Localhost',
+                        hintText: 'Servidor local',
                         hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                         prefixIcon: _localhostController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                       ),
@@ -147,7 +147,7 @@ class _SettingsState extends State<Settings> {
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(20),
                         border: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
-                        hintText: 'Database name',
+                        hintText: 'Nombre de la base de datos',
                         hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                         prefixIcon: _dbController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                       ),
@@ -170,7 +170,7 @@ class _SettingsState extends State<Settings> {
                             child: AnimatedButton(
                               width: 150,
                               height: 40,
-                              text: _buttonState ? "WAIT..." : 'SAVE',
+                              text: _buttonState ? "ESPERAR..." : 'AHORRAR',
                               selectedTextColor: darkColor,
                               animatedOn: AnimatedOn.onHover,
                               animationDuration: 500.ms,
@@ -192,7 +192,7 @@ class _SettingsState extends State<Settings> {
                   AnimatedButton(
                     width: 150,
                     height: 40,
-                    text: "CANCEL",
+                    text: "CANCELAR",
                     selectedTextColor: darkColor,
                     animatedOn: AnimatedOn.onHover,
                     animationDuration: 500.ms,

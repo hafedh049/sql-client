@@ -32,9 +32,9 @@ class _SignInState extends State<SignIn> {
 
   Future<void> _signIn(BuildContext context) async {
     if (_passwordController.text.trim().isEmpty) {
-      showToast(context, "Please enter a correct password", redColor);
+      showToast(context, "Por favor ingrese una contraseña correcta", redColor);
     } else if (_usernameController.text.trim().isEmpty) {
-      showToast(context, "Please enter a correct e-mail", redColor);
+      showToast(context, "Por favor ingrese un correo electrónico correcto", redColor);
     } else {
       _passKey.currentState!.setState(() => _buttonState = true);
       _passKey.currentState!.setState(() => _buttonState = false);
@@ -42,14 +42,14 @@ class _SignInState extends State<SignIn> {
 
       if (response.statusCode == 200) {
         if (response.data["data"]["authorized"]) {
-          showToast(context, "Welcome Back", greenColor);
+          showToast(context, "Bienvenido de nuevo", greenColor);
           userData!.put("login", _usernameController.text);
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const Home()));
         } else {
-          showToast(context, "THIS USER IS NOT AUTHORIZED", redColor);
+          showToast(context, "ESTE USUARIO NO ESTÁ AUTORIZADO", redColor);
         }
       } else {
-        showToast(context, "WRONG CREDENTIALS", redColor);
+        showToast(context, "CREDENCIALES INCORRECTAS", redColor);
       }
     }
   }
@@ -79,12 +79,12 @@ class _SignInState extends State<SignIn> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text("Welcome", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: darkColor)),
+                  Text("Bienvenido", style: GoogleFonts.itim(fontSize: 22, fontWeight: FontWeight.w500, color: darkColor)),
                   Container(width: MediaQuery.sizeOf(context).width, height: .3, color: darkColor, margin: const EdgeInsets.symmetric(vertical: 20)),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Flexible(child: Text("Enter your credentials", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor))),
+                      Flexible(child: Text("Introduce tus credenciales", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor))),
                       const SizedBox(width: 5),
                       Text("*", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: redColor)),
                     ],
@@ -102,7 +102,7 @@ class _SignInState extends State<SignIn> {
                             contentPadding: const EdgeInsets.all(20),
                             focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
                             border: InputBorder.none,
-                            hintText: 'Username',
+                            hintText: 'Nombre de usuario',
                             hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                             prefixIcon: _usernameController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                           ),
@@ -113,7 +113,7 @@ class _SignInState extends State<SignIn> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                    decoration: BoxDecoration(color: lightblueColor.withOpacity(.1), borderRadius: BorderRadius.circular(5)),
                     child: StatefulBuilder(
                       builder: (BuildContext context, void Function(void Function()) _) {
                         return TextField(
@@ -126,7 +126,7 @@ class _SignInState extends State<SignIn> {
                             contentPadding: const EdgeInsets.all(20),
                             focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
                             border: InputBorder.none,
-                            hintText: 'Password',
+                            hintText: 'Contraseña',
                             hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                             prefixIcon: _passwordController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                             suffixIcon: IconButton(onPressed: () => _(() => _passwordState = !_passwordState), icon: Icon(_passwordState ? FontAwesome.eye_solid : FontAwesome.eye_slash_solid, size: 15, color: blueColor)),
@@ -148,12 +148,12 @@ class _SignInState extends State<SignIn> {
                             child: AnimatedButton(
                               width: 150,
                               height: 40,
-                              text: _buttonState ? "WAIT..." : 'SIGN-IN',
+                              text: _buttonState ? "ESPERAR..." : 'INICIAR SESIÓN',
                               selectedTextColor: darkColor,
                               animatedOn: AnimatedOn.onHover,
                               animationDuration: 500.ms,
                               isReverse: true,
-                              selectedBackgroundColor: redColor,
+                              selectedBackgroundColor: blueColor,
                               backgroundColor: blueColor,
                               transitionType: TransitionType.TOP_TO_BOTTOM,
                               textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
