@@ -38,18 +38,24 @@ class _SignInState extends State<SignIn> {
     } else {
       _passKey.currentState!.setState(() => _buttonState = true);
       _passKey.currentState!.setState(() => _buttonState = false);
-      final response = await Dio().post("$url/login", data: <String, String>{"username": _usernameController.text, "password": _passwordController.text});
 
-      if (response.statusCode == 200) {
-        if (response.data["data"]["authorized"]) {
-          showToast(context, "Bienvenido de nuevo", greenColor);
-          userData!.put("login", _usernameController.text);
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const Home()));
+      try {
+        final Response response = await Dio().post("$url/login", data: <String, String>{"username": _usernameController.text, "password": _passwordController.text});
+
+        if (response.statusCode == 200) {
+          if (response.data["data"]["authorized"]) {
+            showToast(context, "Bienvenido de nuevo", greenColor);
+            userData!.put("login", _usernameController.text);
+            userData!.put("pwd", _passwordController.text);
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const Home()));
+          } else {
+            showToast(context, "ESTE USUARIO NO ESTÁ AUTORIZADO", redColor);
+          }
         } else {
-          showToast(context, "ESTE USUARIO NO ESTÁ AUTORIZADO", redColor);
+          showToast(context, "CREDENCIALES INCORRECTAS", redColor);
         }
-      } else {
-        showToast(context, "CREDENCIALES INCORRECTAS", redColor);
+      } catch (e) {
+        showToast(context, e.toString(), redColor);
       }
     }
   }
@@ -64,7 +70,6 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: scaffoldColor,
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Center(
@@ -84,7 +89,7 @@ class _SignInState extends State<SignIn> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Flexible(child: Text("Introduce tus credenciales", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor))),
+                      Flexible(child: Text("introduzca sus credenciales", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor))),
                       const SizedBox(width: 5),
                       Text("*", style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: redColor)),
                     ],

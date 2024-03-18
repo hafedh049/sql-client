@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
@@ -14,6 +15,20 @@ void showToast(BuildContext context, String message, Color color) {
   );
 }
 
+Future<String> authGuarder(BuildContext context) async {
+  try {
+    final Response response = await Dio().post("$url/login", data: <String, String>{"username": userData!.get("login"), "password": userData!.get("pwd")});
+    if (response.statusCode == 200 && response.data["data"]["authorized"]) {
+      return userData!.get("login");
+    }
+    userData!.put("login", "");
+    userData!.put("pwd", "");
+    return "";
+  } catch (e) {
+    return "";
+  }
+}
+
 Future<void> init() async {
   Hive.init((await getApplicationDocumentsDirectory()).path);
   userData = await Hive.openBox("userData");
@@ -28,5 +43,11 @@ Future<void> init() async {
   }
   if (!userData!.containsKey("db")) {
     userData!.put("db", "test");
+  }
+  if (!userData!.containsKey("port")) {
+    userData!.put("port", "3306");
+  }
+  if (!userData!.containsKey("login")) {
+    userData!.put("login", "");
   }
 }

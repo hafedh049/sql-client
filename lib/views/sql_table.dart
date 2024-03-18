@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:sql_client/views/auth/sign_in.dart';
 import 'package:sql_client/views/settings.dart';
 import '../utils/helpers/data_sources.dart';
 import '../utils/shared.dart';
@@ -60,7 +61,24 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
           children: <Widget>[
             Image.asset("assets/images/logo.png", scale: 6),
             const Spacer(),
-            IconButton(onPressed: () => showDialog(context: context, builder: (BuildContext context) => const AlertDialog(content: Settings())), icon: const Icon(FontAwesome.gears_solid, color: blueColor, size: 25)),
+            Tooltip(
+              message: "Salida",
+              child: IconButton(
+                onPressed: () {
+                  userData!.put("login", "");
+                  userData!.put("pwd", "");
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const SignIn()));
+                },
+                icon: const Icon(FontAwesome.door_closed_solid, color: blueColor, size: 25),
+              ),
+            ),
+            Tooltip(
+              message: "Ajustes",
+              child: IconButton(
+                onPressed: () => showDialog(context: context, builder: (BuildContext context) => const AlertDialog(content: Settings())),
+                icon: const Icon(FontAwesome.gears_solid, color: blueColor, size: 25),
+              ),
+            ),
           ],
         ),
         Container(width: MediaQuery.sizeOf(context).width, height: .3, color: darkColor, margin: const EdgeInsets.symmetric(vertical: 20)),

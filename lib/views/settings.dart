@@ -1,5 +1,6 @@
 import 'package:animated_loading_border/animated_loading_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,6 +25,7 @@ class _SettingsState extends State<Settings> {
   final TextEditingController _passwordController = TextEditingController(text: userData!.get("password") ?? "");
   final TextEditingController _localhostController = TextEditingController(text: userData!.get("host"));
   final TextEditingController _dbController = TextEditingController(text: userData!.get("db"));
+  final TextEditingController _portController = TextEditingController(text: userData!.get("port"));
 
   Future<void> _connectMySQL(BuildContext context) async {
     _buttonState = false;
@@ -33,12 +35,15 @@ class _SettingsState extends State<Settings> {
       showToast(context, "Por favor ingrese un host local correcto", redColor);
     } else if (_dbController.text.trim().isEmpty) {
       showToast(context, "Por favor ingrese un nombre de base de datos correcto", redColor);
+    } else if (_portController.text.trim().isEmpty || int.parse(_portController.text) <= 0 || int.parse(_portController.text) > 65535) {
+      showToast(context, "Por favor ingrese un número de puerto correcto", redColor);
     } else {
       _buttonState = true;
       userData!.put("username", _rootController.text);
       userData!.put("password", _passwordController.text.isEmpty ? null : _passwordController.text);
       userData!.put("host", _localhostController.text);
       userData!.put("db", _dbController.text);
+      userData!.put("port", _portController.text);
       Navigator.pop(context);
     }
   }
@@ -49,6 +54,7 @@ class _SettingsState extends State<Settings> {
     _passwordController.dispose();
     _localhostController.dispose();
     _dbController.dispose();
+    _portController.dispose();
     super.dispose();
   }
 
@@ -151,6 +157,28 @@ class _SettingsState extends State<Settings> {
                         hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
                         prefixIcon: _dbController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
                       ),
+                      cursorColor: blueColor,
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(3)),
+                child: StatefulBuilder(
+                  builder: (BuildContext context, void Function(void Function()) _) {
+                    return TextField(
+                      onChanged: (String value) => value.trim().length <= 1 ? _(() {}) : null,
+                      controller: _portController,
+                      style: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(20),
+                        border: const OutlineInputBorder(borderSide: BorderSide(color: blueColor, width: 2, style: BorderStyle.solid)),
+                        hintText: 'Número de puerto',
+                        hintStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor),
+                        prefixIcon: _portController.text.trim().isEmpty ? null : const Icon(FontAwesome.circle_check_solid, size: 15, color: greenColor),
+                      ),
+                      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(5)],
                       cursorColor: blueColor,
                     );
                   },

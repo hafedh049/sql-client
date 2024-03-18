@@ -32,7 +32,7 @@ class _SideMenuState extends State<SideMenu> {
     "Ventas por semana",
     "Cifras vendedores",
     "Medias venderores",
-    "Actualizacion general",
+    "Actualización general",
   ];
   CalendarFormat _fromCalendarFormat = CalendarFormat.month;
   DateTime _fromFocusedDay = DateTime.now();
@@ -177,20 +177,25 @@ class _SideMenuState extends State<SideMenu> {
     final int nbQueries = (await dio.get("$url/totalQuerys")).data["totalQuerys"];
     final Map<String, dynamic> queriesResponse = (await dio.get("$url/getUserQuerys", data: <String, String>{"username": userData!.get("login")})).data["Querys"];
     return <Map<String, dynamic>>[
-      for (int index = 0; index < min(nbQueries, queriesResponse.length % 7); index += 1)
+      for (int index = 0; index < min(nbQueries, queriesResponse.length); index += 1)
         <String, dynamic>{
-          "name": _queryNames[index],
+          "name": index >= 7 ? "Ejecutar consulta SQL ${index + 1}" : _queryNames[index],
           "callback": () async {
-            final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: 3306, user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
-            final MySqlConnection conn = await MySqlConnection.connect(settings);
-            final Results results = await conn.query(queriesResponse[index.toString()]);
-            if (queriesResponse[index.toString()].toLowerCase().contains("select")) {
-              columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
-              products = [for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
-              pagerKey.currentState!.setState(() {});
-            } else {
+            try {
+              final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: int.parse(userData!.get("port")), user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
+              final MySqlConnection conn = await MySqlConnection.connect(settings);
+              final Results results = await conn.query(queriesResponse[index.toString()]);
+              if (queriesResponse[index.toString()].toLowerCase().contains("select")) {
+                columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
+                products = [for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
+                pagerKey.currentState!.setState(() {});
+              } else {
+                // ignore: use_build_context_synchronously
+                showToast(context, results.affectedRows! != 0 ? "Consulta ejecutada exitosamente" : "Consulta fallida", results.affectedRows! != 0 ? blueColor : redColor);
+              }
+            } catch (e) {
               // ignore: use_build_context_synchronously
-              showToast(context, results.affectedRows! != 0 ? "Consulta ejecutada exitosamente" : "Consulta fallida", results.affectedRows! != 0 ? blueColor : redColor);
+              showToast(context, e.toString(), redColor);
             }
           },
         },
@@ -217,38 +222,39 @@ class _SideMenuState extends State<SideMenu> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             FutureBuilder<List<Map<String, dynamic>>>(
-                future: _loadQueries(),
-                builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-                  if (snapshot.hasData) {
-                    _runSQLQueries = snapshot.data!;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        for (Map<String, dynamic> runSQL in _runSQLQueries) ...<Widget>[
-                          AnimatedButton(
-                            height: 40,
-                            text: runSQL["name"],
-                            selectedTextColor: darkColor,
-                            animatedOn: AnimatedOn.onHover,
-                            animationDuration: 500.ms,
-                            isReverse: true,
-                            selectedBackgroundColor: greenColor,
-                            backgroundColor: blueColor,
-                            transitionType: TransitionType.TOP_TO_BOTTOM,
-                            textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
-                            onPress: runSQL["callback"],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
+              future: _loadQueries(),
+              builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                if (snapshot.hasData) {
+                  _runSQLQueries = snapshot.data!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      for (Map<String, dynamic> runSQL in _runSQLQueries) ...<Widget>[
+                        AnimatedButton(
+                          height: 40,
+                          text: runSQL["name"],
+                          selectedTextColor: darkColor,
+                          animatedOn: AnimatedOn.onHover,
+                          animationDuration: 500.ms,
+                          isReverse: true,
+                          selectedBackgroundColor: greenColor,
+                          backgroundColor: blueColor,
+                          transitionType: TransitionType.TOP_TO_BOTTOM,
+                          textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
+                          onPress: runSQL["callback"],
+                        ),
+                        const SizedBox(height: 20),
                       ],
-                    );
-                  } else if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(color: blueColor);
-                  } else {
-                    return Text(snapshot.error.toString());
-                  }
-                }),
+                    ],
+                  );
+                } else if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(color: blueColor);
+                } else {
+                  return Text(snapshot.error.toString());
+                }
+              },
+            ),
             for (Map<String, dynamic> export in _exportCSVs) ...<Widget>[
               AnimatedButton(
                 height: 40,
@@ -273,13 +279,13 @@ class _SideMenuState extends State<SideMenu> {
               animationDuration: 500.ms,
               isReverse: true,
               selectedBackgroundColor: greenColor,
-              backgroundColor: blueColor,
+              backgroundColor: const Color.fromARGB(255, 0, 127, 224),
               transitionType: TransitionType.TOP_TO_BOTTOM,
               textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
               onPress: () async {
                 try {
                   String query = (await Dio().get("$url/queryWithTime", data: <String, String>{"username": userData!.get("login")})).data["Querys"];
-                  final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: 3306, user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
+                  final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: int.parse(userData!.get("port")), user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
                   final MySqlConnection conn = await MySqlConnection.connect(settings);
                   if (query.toLowerCase().startsWith("select")) {
                     Results results = await conn.query(
@@ -337,7 +343,7 @@ class _SideMenuState extends State<SideMenu> {
                           child: AnimatedContainer(
                             duration: 300.ms,
                             padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: _selectedTab == 0 ? blueColor : lightblueColor),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: _selectedTab == 0 ? const Color.fromARGB(255, 0, 127, 224).withOpacity(.6) : const Color.fromARGB(255, 0, 127, 224)),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -366,7 +372,7 @@ class _SideMenuState extends State<SideMenu> {
                           child: AnimatedContainer(
                             duration: 300.ms,
                             padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: _selectedTab == 1 ? blueColor : lightblueColor),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: _selectedTab == 1 ? const Color.fromARGB(255, 0, 127, 224).withOpacity(.6) : const Color.fromARGB(255, 0, 127, 224)),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
@@ -447,6 +453,7 @@ class _SideMenuState extends State<SideMenu> {
                     builder: (BuildContext context, void Function(void Function()) _) {
                       return TableCalendar(
                         locale: "es_US",
+                        availableCalendarFormats: const <CalendarFormat, String>{CalendarFormat.month: 'Mes', CalendarFormat.twoWeeks: '2 Semanas', CalendarFormat.week: 'Semana'},
                         firstDay: DateTime(1970),
                         lastDay: DateTime(2300),
                         focusedDay: _fromFocusedDay,
@@ -454,18 +461,20 @@ class _SideMenuState extends State<SideMenu> {
                         selectedDayPredicate: (DateTime day) => isSameDay(_fromSelectedDay, day),
                         onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
                           if (!isSameDay(_fromSelectedDay, selectedDay)) {
-                            _fromSelectedDay = selectedDay;
-                            _fromFocusedDay = focusedDay;
+                            _(() {
+                              _fromSelectedDay = selectedDay;
+                              _fromFocusedDay = focusedDay;
+                            });
                             _fromToKey.currentState!.setState(() {});
                           }
                         },
                         onFormatChanged: (CalendarFormat format) {
                           if (_fromCalendarFormat != format) {
-                            _fromCalendarFormat = format;
+                            _(() => _fromCalendarFormat = format);
                           }
                         },
                         onPageChanged: (DateTime focusedDay) {
-                          _fromFocusedDay = focusedDay;
+                          _(() => _fromFocusedDay = focusedDay);
                         },
                       );
                     },
@@ -474,6 +483,7 @@ class _SideMenuState extends State<SideMenu> {
                     builder: (BuildContext context, void Function(void Function()) _) {
                       return TableCalendar(
                         locale: "es_ES",
+                        availableCalendarFormats: const <CalendarFormat, String>{CalendarFormat.month: 'Mes', CalendarFormat.twoWeeks: '2 Semanas', CalendarFormat.week: 'Semana'},
                         firstDay: DateTime(1970),
                         lastDay: DateTime(2300),
                         focusedDay: _toFocusedDay,
