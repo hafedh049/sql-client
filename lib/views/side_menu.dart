@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -16,6 +17,7 @@ import 'package:sql_client/models/products_model.dart';
 import 'package:sql_client/utils/callbacks.dart';
 import 'package:sql_client/utils/shared.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:process_run/process_run.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
@@ -59,6 +61,8 @@ class _SideMenuState extends State<SideMenu> {
 
   final DropdownController _fromHoursDropdownController = DropdownController();
   final DropdownController _toHoursDropdownController = DropdownController();
+
+  final Shell _shell = Shell();
 
   @override
   void initState() {
@@ -182,16 +186,33 @@ class _SideMenuState extends State<SideMenu> {
           "name": index >= 7 ? "Ejecutar consulta SQL ${index + 1}" : _queryNames[index],
           "callback": () async {
             try {
-              final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: int.parse(userData!.get("port")), user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
-              final MySqlConnection conn = await MySqlConnection.connect(settings);
-              final Results results = await conn.query(queriesResponse[index.toString()]);
-              if (queriesResponse[index.toString()].toLowerCase().contains("select")) {
-                columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
-                products = [for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
-                pagerKey.currentState!.setState(() {});
+              if (userData!.get("server") == "MySQL") {
+                final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: int.parse(userData!.get("port")), user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
+                final MySqlConnection conn = await MySqlConnection.connect(settings);
+                final Results results = await conn.query(queriesResponse[index.toString()]);
+                if (queriesResponse[index.toString()].toLowerCase().contains("select")) {
+                  columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
+                  products = <Product>[for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
+                  pagerKey.currentState!.setState(() {});
+                } else {
+                  // ignore: use_build_context_synchronously
+                  showToast(context, results.affectedRows! != 0 ? "Consulta ejecutada exitosamente" : "Consulta fallida", results.affectedRows! != 0 ? blueColor : redColor);
+                }
               } else {
-                // ignore: use_build_context_synchronously
-                showToast(context, results.affectedRows! != 0 ? "Consulta ejecutada exitosamente" : "Consulta fallida", results.affectedRows! != 0 ? blueColor : redColor);
+                await _shell.run('start mssql.exe ${userData!.get("host")} ${userData!.get("db")} ${userData!.get("username")} ${userData!.get("password") ?? "_"} ${queriesResponse[index.toString()]}');
+
+                final Map<String, dynamic> queryRes = (json.decode((await _shell.run('type output.json')).outText) as Map<String, dynamic>);
+
+                if (queryRes.containsKey("fields")) {
+                  columns = queryRes["fields"].map((dynamic e) => e.toUpperCase()).toList().cast<String>();
+                  products = <Product>[
+                    for (final List row in queryRes["records"]) Product(<String>[for (final dynamic item in row) item.toString()])
+                  ];
+                  pagerKey.currentState!.setState(() {});
+                } else {
+                  // ignore: use_build_context_synchronously
+                  showToast(context, queryRes["message"], queryRes["success"] ? greenColor : redColor);
+                }
               }
             } catch (e) {
               // ignore: use_build_context_synchronously
@@ -284,39 +305,54 @@ class _SideMenuState extends State<SideMenu> {
               textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor),
               onPress: () async {
                 try {
-                  String query = (await Dio().get("$url/queryWithTime", data: <String, String>{"username": userData!.get("login")})).data["Querys"];
-                  final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: int.parse(userData!.get("port")), user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
-                  final MySqlConnection conn = await MySqlConnection.connect(settings);
-                  if (query.toLowerCase().startsWith("select")) {
-                    Results results = await conn.query(
-                      query
-                          .replaceAll("/fd/", _fromSelectedDay.day.toString())
-                          .replaceAll("/fm/", _fromSelectedDay.month.toString())
-                          .replaceAll("/fy/", _fromSelectedDay.year.toString())
-                          .replaceAll(
-                            "/fh/",
-                            _fromHours,
-                          )
-                          .replaceAll(
-                            "/th/",
-                            _toHours,
-                          )
-                          .replaceAll("/td/", _toSelectedDay.day.toString())
-                          .replaceAll("/tm/", _toSelectedDay.month.toString())
-                          .replaceAll("/ty/", _toSelectedDay.year.toString()),
-                    );
-                    columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
-                    pagerKey.currentState!.setState(
-                      () {
-                        products = <Product>[for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
-                      },
-                    );
+                  String query = (await Dio().get("$url/queryWithTime", data: <String, String>{"username": userData!.get("login")}))
+                      .data["Querys"]
+                      .query
+                      .replaceAll("/fd/", _fromSelectedDay.day.toString())
+                      .replaceAll("/fm/", _fromSelectedDay.month.toString())
+                      .replaceAll("/fy/", _fromSelectedDay.year.toString())
+                      .replaceAll(
+                        "/fh/",
+                        _fromHours,
+                      )
+                      .replaceAll(
+                        "/th/",
+                        _toHours,
+                      )
+                      .replaceAll("/td/", _toSelectedDay.day.toString())
+                      .replaceAll("/tm/", _toSelectedDay.month.toString())
+                      .replaceAll("/ty/", _toSelectedDay.year.toString());
+                  if (userData!.get("server") == "MySQL") {
+                    final ConnectionSettings settings = ConnectionSettings(host: userData!.get("host"), port: int.parse(userData!.get("port")), user: userData!.get("username"), password: userData!.get("password"), db: userData!.get("db"));
+                    final MySqlConnection conn = await MySqlConnection.connect(settings);
+                    if (query.toLowerCase().startsWith("select")) {
+                      Results results = await conn.query(query);
+                      columns = results.fields.map((Field e) => e.name!.toUpperCase()).toList();
+                      pagerKey.currentState!.setState(
+                        () {
+                          products = <Product>[for (final row in results) Product(row.fields.entries.map((MapEntry<String, dynamic> e) => e.value.toString()).toList())];
+                        },
+                      );
+                    } else {
+                      Results results = await conn.query(query);
+                      if (results.affectedRows != 0) {
+                      } else {
+                        // ignore: use_build_context_synchronously
+                        showToast(context, "ACTUALIZACIÓN COMPLETADA", greenColor);
+                      }
+                    }
                   } else {
-                    Results results = await conn.query(query);
-                    if (results.affectedRows != 0) {
+                    await _shell.run('start mssql.exe ${userData!.get("host")} ${userData!.get("db")} ${userData!.get("username")} ${userData!.get("password") ?? "_"} $query');
+                    final Map<String, dynamic> queryRes = (json.decode((await _shell.run('type output.json')).outText) as Map<String, dynamic>);
+                    if (queryRes.containsKey("fields")) {
+                      columns = queryRes["fields"].map((dynamic e) => e.toUpperCase()).toList().cast<String>();
+                      products = <Product>[
+                        for (final List row in queryRes["records"]) Product(<String>[for (final dynamic item in row) item.toString()])
+                      ];
+                      pagerKey.currentState!.setState(() {});
                     } else {
                       // ignore: use_build_context_synchronously
-                      showToast(context, "ACTUALIZACIÓN COMPLETADA", greenColor);
+                      showToast(context, queryRes["message"], queryRes["success"] ? greenColor : redColor);
                     }
                   }
                 } catch (e) {

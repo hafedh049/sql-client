@@ -15,7 +15,7 @@ class SQLTable extends StatefulWidget {
 class SQLTableState extends State<SQLTable> with RestorationMixin {
   final RestorableProductSelections _productSelections = RestorableProductSelections();
   final RestorableInt _rowIndex = RestorableInt(0);
-  final RestorableInt _rowsPerPage = RestorableInt(PaginatedDataTable.defaultRowsPerPage + 10);
+  final RestorableInt _rowsPerPage = RestorableInt(PaginatedDataTable.defaultRowsPerPage + 40);
   late ProductDataSource _productsDataSource;
   bool _initialized = false;
   final TextEditingController _searchController = TextEditingController();
@@ -92,7 +92,7 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
                   _productsDataSource = ProductDataSource(context, products, true, true, true);
                   return PaginatedDataTable(
                     showCheckboxColumn: false,
-                    availableRowsPerPage: const <int>[20, 30],
+                    availableRowsPerPage: const <int>[50, 100, 200, 500, 1000],
                     arrowHeadColor: blueColor,
                     rowsPerPage: _rowsPerPage.value,
                     onRowsPerPageChanged: (int? value) => _(() => _rowsPerPage.value = value!),

@@ -50,4 +50,7 @@ Future<void> init() async {
   if (!userData!.containsKey("login")) {
     userData!.put("login", "");
   }
+  if (!userData!.containsKey("server")) {
+    userData!.put("server", "MySQL");
+  }
 }

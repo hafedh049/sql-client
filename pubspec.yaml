@@ -27,6 +27,8 @@ dependencies:
   toastification: ^1.2.1
   cool_dropdown: ^2.1.0
   intl: ^0.19.0
+  toggle_switch: ^2.2.1
+  process_run: ^0.14.2
 
 dev_dependencies:
   flutter_test:
