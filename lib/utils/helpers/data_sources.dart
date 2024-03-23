@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:flutter/services.dart';
+import 'package:sql_client/utils/callbacks.dart';
+import 'package:sql_client/utils/shared.dart';
 
 import '../../models/products_model.dart';
 
@@ -49,9 +51,15 @@ class ProductDataSource extends DataTableSource {
     return DataRow2.byIndex(
       index: index,
       color: color != null ? MaterialStateProperty.all(color) : (hasZebraStripes && index.isEven ? MaterialStateProperty.all(Theme.of(context).highlightColor) : null),
-      onTap: hasRowTaps ? () => _showSnackbar(context, 'Tapped on row') : null,
       cells: <DataCell>[
-        for (final String item in product.columns) DataCell(Text(item)),
+        for (final String item in product.columns)
+          DataCell(
+            onTap: () async {
+              Clipboard.setData(ClipboardData(text: item));
+              showToast(context, "Data has been copied to clipboard", greenColor);
+            },
+            Tooltip(message: item, child: Text(item)),
+          ),
       ],
     );
   }
@@ -64,8 +72,4 @@ class ProductDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => products.length;
-}
-
-_showSnackbar(BuildContext context, String text, [Color? color]) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: color, duration: 1.seconds, content: Text(text)));
 }

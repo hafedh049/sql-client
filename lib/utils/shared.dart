@@ -14,7 +14,7 @@ String url = "";
 
 Box? userData;
 
-List<String> columns = List<String>.generate(10, (int index) => "");
+List<String> columns = List<String>.generate(40, (int index) => "");
 
 List<Product> products = <Product>[];
 

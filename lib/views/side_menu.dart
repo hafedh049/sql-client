@@ -307,7 +307,6 @@ class _SideMenuState extends State<SideMenu> {
                 try {
                   String query = (await Dio().get("$url/queryWithTime", data: <String, String>{"username": userData!.get("login")}))
                       .data["Querys"]
-                      .query
                       .replaceAll("/fd/", _fromSelectedDay.day.toString())
                       .replaceAll("/fm/", _fromSelectedDay.month.toString())
                       .replaceAll("/fy/", _fromSelectedDay.year.toString())
@@ -342,7 +341,7 @@ class _SideMenuState extends State<SideMenu> {
                       }
                     }
                   } else {
-                    await _shell.run('start mssql.exe ${userData!.get("host")} ${userData!.get("db")} ${userData!.get("username")} ${userData!.get("password") ?? "_"} $query');
+                    await _shell.run("""start mssql.exe ${userData!.get('host')} ${userData!.get('db')} ${userData!.get('username')} ${userData!.get('password') ?? '_'} $query""");
                     final Map<String, dynamic> queryRes = (json.decode((await _shell.run('type output.json')).outText) as Map<String, dynamic>);
                     if (queryRes.containsKey("fields")) {
                       columns = queryRes["fields"].map((dynamic e) => e.toUpperCase()).toList().cast<String>();
@@ -442,7 +441,7 @@ class _SideMenuState extends State<SideMenu> {
                       resultOptions: ResultOptions(textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor)),
                       defaultItem: CoolDropdownItem(label: "00", value: "00"),
                       dropdownList: <CoolDropdownItem<String>>[
-                        for (int hour = 00; hour < 60; hour += 1)
+                        for (int hour = 00; hour < 24; hour += 1)
                           CoolDropdownItem(
                             label: hour.toString().padLeft(2, "0"),
                             value: hour.toString().padLeft(2, "0"),
@@ -466,7 +465,7 @@ class _SideMenuState extends State<SideMenu> {
                       resultOptions: ResultOptions(textStyle: GoogleFonts.itim(fontSize: 16, fontWeight: FontWeight.w500, color: darkColor)),
                       defaultItem: CoolDropdownItem(label: "00", value: "00"),
                       dropdownList: <CoolDropdownItem<String>>[
-                        for (int hour = 00; hour < 60; hour += 1)
+                        for (int hour = 00; hour < 24; hour += 1)
                           CoolDropdownItem(
                             label: hour.toString().padLeft(2, "0"),
                             value: hour.toString().padLeft(2, "0"),
@@ -488,7 +487,7 @@ class _SideMenuState extends State<SideMenu> {
                   StatefulBuilder(
                     builder: (BuildContext context, void Function(void Function()) _) {
                       return TableCalendar(
-                        locale: "es_US",
+                        locale: "es_ES",
                         availableCalendarFormats: const <CalendarFormat, String>{CalendarFormat.month: 'Mes', CalendarFormat.twoWeeks: '2 Semanas', CalendarFormat.week: 'Semana'},
                         firstDay: DateTime(1970),
                         lastDay: DateTime(2300),

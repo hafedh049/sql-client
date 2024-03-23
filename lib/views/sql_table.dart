@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:sql_client/views/auth/sign_in.dart';
@@ -83,27 +84,24 @@ class SQLTableState extends State<SQLTable> with RestorationMixin {
         ),
         Container(width: MediaQuery.sizeOf(context).width, height: .3, color: darkColor, margin: const EdgeInsets.symmetric(vertical: 20)),
         Expanded(
-          child: ListView(
-            restorationId: restorationId,
-            children: <Widget>[
-              StatefulBuilder(
-                key: pagerKey,
-                builder: (BuildContext context, void Function(void Function()) _) {
-                  _productsDataSource = ProductDataSource(context, products, true, true, true);
-                  return PaginatedDataTable(
-                    showCheckboxColumn: false,
-                    availableRowsPerPage: const <int>[50, 100, 200, 500, 1000],
-                    arrowHeadColor: blueColor,
-                    rowsPerPage: _rowsPerPage.value,
-                    onRowsPerPageChanged: (int? value) => _(() => _rowsPerPage.value = value!),
-                    initialFirstRowIndex: _rowIndex.value,
-                    onPageChanged: (int rowIndex) => _(() => _rowIndex.value = rowIndex),
-                    columns: <DataColumn>[for (final String column in columns) DataColumn(label: Text(column))],
-                    source: _productsDataSource,
-                  );
-                },
-              ),
-            ],
+          child: StatefulBuilder(
+            key: pagerKey,
+            builder: (BuildContext context, void Function(void Function()) _) {
+              _productsDataSource = ProductDataSource(context, products, true, true, true);
+              return PaginatedDataTable2(
+                minWidth: 2450,
+                showCheckboxColumn: false,
+                showFirstLastButtons: true,
+                availableRowsPerPage: const <int>[50, 100, 200, 500, 1000],
+                rowsPerPage: _rowsPerPage.value,
+                onRowsPerPageChanged: (int? value) => _(() => _rowsPerPage.value = value!),
+                initialFirstRowIndex: _rowIndex.value,
+                onPageChanged: (int rowIndex) => _(() => _rowIndex.value = rowIndex),
+                columns: <DataColumn2>[for (final String column in columns) DataColumn2(label: Text(column), fixedWidth: null, size: ColumnSize.L, tooltip: column)],
+                source: _productsDataSource,
+                isHorizontalScrollBarVisible: true,
+              );
+            },
           ),
         ),
       ],
