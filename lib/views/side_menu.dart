@@ -341,7 +341,8 @@ class _SideMenuState extends State<SideMenu> {
                       }
                     }
                   } else {
-                    await _shell.run("""start mssql.exe ${userData!.get('host')} ${userData!.get('db')} ${userData!.get('username')} ${userData!.get('password') ?? '_'} $query""");
+                    print(query);
+                    /*await _shell.run("""start mssql.exe ${userData!.get('host')} ${userData!.get('db')} ${userData!.get('username')} ${userData!.get('password') ?? '_'} $query""");
                     final Map<String, dynamic> queryRes = (json.decode((await _shell.run('type output.json')).outText) as Map<String, dynamic>);
                     if (queryRes.containsKey("fields")) {
                       columns = queryRes["fields"].map((dynamic e) => e.toUpperCase()).toList().cast<String>();
@@ -352,7 +353,7 @@ class _SideMenuState extends State<SideMenu> {
                     } else {
                       // ignore: use_build_context_synchronously
                       showToast(context, queryRes["message"], queryRes["success"] ? greenColor : redColor);
-                    }
+                    }*/
                   }
                 } catch (e) {
                   // ignore: use_build_context_synchronously
